@@ -30,21 +30,21 @@ N = 250
 n_cores=32
 np.random.seed(101)
 thresholds = [25,50,100,150,200,250]
-topN = [25,50,100,150,200,250]
+topN_vals = [25,50,100,150,200,250]
 
-thresh_top_combos = [(top,thresh) for top in topN for thresh in thresholds if thresh<=top]
+thresh_top_combos = [(top,thresh) for top in topN_vals for thresh in thresholds if thresh<=top]
 
-def proc_fm(row,topN=topN,thresholds=thresholds):
+def proc_fm(row,topNs=topN_vals,thresholds=thresholds):
     fm = np.array(row['fm'])
     result = {}
-    result['all'] = len(set(row['current']).intersection(fm))/float(N)
+    result[str((N,'all'))] = len(set(row['current']).intersection(fm))/float(N)
 
     fm_set = set(fm)
     fm_set.discard(-1)
     if len(fm_set)>0:
-        result['possible'] = len(set(row['current'][:N]).intersection(fm_set))/float(len(fm_set))
+        result[str((N,'possible'))] = len(set(row['current'][:N]).intersection(fm_set))/float(len(fm_set))
 
-    for t in topN:
+    for t in topNs:
         fm_set = set(fm[:t])
         fm_set.discard(-1)
         if len(fm_set)>0:
@@ -114,14 +114,15 @@ for m in model_dict:
 
             combined['current'] = topN
             overlap = combined.apply(proc_fm)
-            for measure,top in [('all',N),('possible',N)]+thresh_top_combos:
-                summary = pd.Series([row.get(str(measure)) for row in overlap]).dropna().describe()
+            for top_measure in [(N,'all'),(N,'possible')]+thresh_top_combos:
+                top,measure = top_measure
+                summary = pd.Series([row.get(str(top_measure)) for row in overlap]).dropna().describe()
                 fout.write('\t'.join(map(str,['fm',k,measure,top]+list(summary)))+'\n')
                 fout.flush()
 
 
             if last is not None:
-                for t in topN:
+                for t in topN_vals:
                     overlap = combined_prev.apply(lambda row: len(set(row['current'][:t]).intersection(set(row['prev'][:t])))/float(t))
                     summary = pd.Series(overlap).dropna().describe()
                     fout.write('\t'.join(map(str,['prev',k,None,t]+list(summary)))+'\n')
@@ -147,7 +148,7 @@ for m in model_dict:
 
                 split_combined = gl.SFrame({'a':topN_a, 'b':topN_b})
 
-                for t in topN:
+                for t in topN_vals:
                     overlap = split_combined.apply(lambda row: len(set(row['a'][:t]).intersection(set(row['b'][:t])))/float(t))
                     summary = pd.Series(overlap).dropna().describe()
                     fout.write('\t'.join(map(str,['split',k,None,t]+list(summary)))+'\n')
