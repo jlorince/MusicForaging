@@ -1,0 +1,9 @@
+testData/*
+GenreModeling/data/*
+GenreModeling/eval_results
+*.DS_Store
+*~
+*.pyc
+*lastfm.apikey
+*.ipynb_checkpoints
+*.DS_Store
