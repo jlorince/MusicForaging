@@ -1,6 +1,5 @@
 testData/*
 GenreModeling/data/*
-GenreModeling/eval_results
 *.DS_Store
 *~
 *.pyc

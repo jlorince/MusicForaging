@@ -1,0 +1,20 @@
+rating_transforms = [lambda x: x, lambda x: min(5,1+np.log10(x)), lambda x: min(10,np.log(1+(x/eps)))], nmf=True, data_trimmed=False
+
+112312.0    0.125822619132  0.107875145943  0.0 0.04    0.1 0.19    0.63
+112312.0    0.119744194743  0.108831282823  0.0 0.03    0.09    0.18    0.71
+112312.0    0.119224659876  0.109609658202  0.0 0.03    0.09    0.18    0.77
+
+
+rating_transforms = [lambda x: x, lambda x: min(5,1+np.log10(x)), lambda x: min(10,np.log(1+(x/eps)))], nmf=False, data_trimmed=False
+
+112312.0    0.236526996225  0.143895014558  0.0 0.12    0.23    0.34    0.76
+112312.0    0.225547314624  0.147782387988  0.0 0.11    0.21    0.33    0.81
+112312.0    0.227759811952  0.147869983559  0.0 0.11    0.21    0.33    0.81
+
+rating_transforms = [lambda x: x, lambda x: min(4,np.log10(x)), lambda x: min(10,np.log(1+(x/eps)))], nmf=True, data_trimmed=True
+
+rating_transforms = [lambda x: x, lambda x: min(4,np.log10(x)), lambda x: min(10,np.log(1+(x/eps)))], nmf=False, data_trimmed=True
+
+112312.0    0.227601235843  0.139330363494  0.0 0.12    0.22    0.33    0.71
+112312.0    0.224640732958  0.14252280639   0.0 0.11    0.21    0.32    0.76
+112312.0    0.225681494408  0.142979706487  0.0 0.11    0.21    0.33    0.78

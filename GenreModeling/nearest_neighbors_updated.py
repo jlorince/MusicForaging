@@ -89,7 +89,7 @@ for m in model_dict:
     if k_range[0]==10:
         last = None
     else:
-        result = gl.SFrame(d_lda+'knn_{}'.format(k-10))
+        result = gl.SFrame(d_lda+'knn_{}'.format(k_range[0]-10))
         last = result[['query_label','reference_label','rank']].unstack(('rank','reference_label'),new_column_name='knn').sort('query_label').apply(lambda row: [row['knn'][i] for i in xrange(1,N+1)])
     for k in k_range:
 
@@ -122,6 +122,7 @@ for m in model_dict:
 
 
             if last is not None:
+                combined_prev = gl.SFrame({'current':topN,'prev':last})
                 for t in topN_vals:
                     overlap = combined_prev.apply(lambda row: len(set(row['current'][:t]).intersection(set(row['prev'][:t])))/float(t))
                     summary = pd.Series(overlap).dropna().describe()
