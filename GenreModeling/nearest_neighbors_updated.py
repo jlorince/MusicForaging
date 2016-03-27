@@ -22,8 +22,9 @@ gl.set_runtime_config('GRAPHLAB_FILEIO_MAXIMUM_CACHE_CAPACITY_PER_FILE',10000000
 
 
 d_lda = 'lda_tests_100iter/'
-d_mf = 'MF_tests/'
-k_range = np.arange(10,201,10)
+#d_mf = 'MF_tests/'
+d_mf = 'lda_tests_artists/'
+k_range = np.arange(140,201,10)
 lastfm_data_dir = 'lastfm_top_similar_artists_new'
 
 N = 250
@@ -84,20 +85,23 @@ for out_file in (out_file_mf,out_file_lda):
             fout.write('\t'.join(map(str,['source', 'k', 'method', 'topN','count', 'mean', 'std', 'min', 'q25', 'median', 'q75', 'max']))+'\n')
 
 
-model_dict = {'mf':out_file_mf,'lda':out_file_lda}
+model_dict = {'mf':out_file_mf}#,'lda':out_file_lda}
+
 for m in model_dict:
+
+    if m == 'mf':
+        d = d_mf
+    elif m == 'lda':
+        d = d_lda
+
     if k_range[0]==10:
         last = None
     else:
-        result = gl.SFrame(d_lda+'knn_{}'.format(k_range[0]-10))
+        result = gl.SFrame(d+'knn_{}'.format(k_range[0]-10))
         last = result[['query_label','reference_label','rank']].unstack(('rank','reference_label'),new_column_name='knn').sort('query_label').apply(lambda row: [row['knn'][i] for i in xrange(1,N+1)])
+
     for k in k_range:
 
-
-        if m == 'mf':
-            d = d_mf
-        elif m == 'lda':
-            d = d_lda
 
         with open(model_dict[m],'a') as fout:
             print 'K=%s' % k

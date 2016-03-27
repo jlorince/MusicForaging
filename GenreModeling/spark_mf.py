@@ -18,10 +18,9 @@ split = True
 raw_data = sc.textFile("mf_format.txt").map(lambda row: [int(val) for val in row.strip().split(',')])
 
 if split:
-    train,test = raw_data.randomSplit(weights=[0.9,0.1],seed=99)
-    ratings = train.map(lambda row: Rating(row[0],row[1],row[2])).persist()
-    testData = test.map(lambda p: (p[0], p[1]))
-    base_model_name = d+'model_split_'
+    rand_a,rand_b = raw_data.randomSplit(weights=[0.5,0.5],seed=99).persist()
+    ratings_a = rand_a.map(lambda row: Rating(row[0],row[1],row[2])).persist()
+    ratings_b = rand_b.map(lambda row: Rating(row[0],row[1],row[2])).persist()
 else:
     ratings = raw_data.map(lambda row: Rating(row[0],row[1],row[2])).persist()
     base_model_name = d+'model_'
@@ -31,23 +30,20 @@ with open(d+'log_rmse','a') as fout:
     for k in k_range:
         start = time.time()
 
-        if os.path.exists(base_model_name+str(k)):
-            continue
-            #model = MatrixFactorizationModel.load(sc,d+'model_split_%s' % k)
-
+        if split:
+            model_a = ALS.trainImplicit(ratings_a,rank=k,iterations=5,alpha=0.01,nonnegative=False)
+            model_b = ALS.trainImplicit(ratings_a,rank=k,iterations=5,alpha=0.01,nonnegative=False)
+            model_a.save(sc,'model_rand_a_'+str(k))
+            model_b.save(sc,'model_rand_b_'+str(k))
+            artist_features_a = np.array(model_a.productFeatures().sortByKey().map(lambda row: row[1]).collect())
+            np.save(d+"features_rand_a_{}".format(k))
+            artist_features_b = np.array(model_b.productFeatures().sortByKey().map(lambda row: row[1]).collect())
+            np.save(d+"features_rand_b_{}".format(k))
         else:
             model = ALS.trainImplicit(ratings,rank=k,iterations=5,alpha=0.01,nonnegative=False)
-            model.save(sc,base_model_name+str(k))
-            if split:
-                predictions = model.predictAll(testData).map(lambda r: ((r[0], r[1]), r[2]))
-                ratesAndPreds = ratings.map(lambda r: ((r[0], r[1]), r[2])).join(predictions)
-                RMSE = np.sqrt(ratesAndPreds.map(lambda r: (r[1][0] - r[1][1])**2).mean())
-                print("Mean Squared Error = " + str(RMSE))
-                fout.write('\t'.join(map(str,[k,RMSE]))+'\n')
-                fout.flush()
-            else:
-                artist_features = np.array(model.productFeatures().sortByKey().map(lambda row: row[1]).collect())
-                np.save(d+"features_{}".format(k))
+            model.save(sc,d+'model_'+str(k))
+            artist_features = np.array(model.productFeatures().sortByKey().map(lambda row: row[1]).collect())
+            np.save(d+"features_{}".format(k))
 
 
 

@@ -1,5 +1,3 @@
-# -*-coding=utf-8 -*-
-
 import numpy as np
 from scipy.spatial.distance import cosine
 from urllib import unquote_plus
@@ -9,6 +7,8 @@ import os
 from math import factorial
 import sys
 import textwrap
+
+min_known_artists = 200
 
 
 # little function to handle the annoying 80 char line wrapping on windows
@@ -86,19 +86,32 @@ if __name__=='__main__':
                 continue
             accepted = False
             while not accepted:
-                query =  '[{} / {}] Are you familiar with the musical artist "{}" ?'.format(i+1,1000,unquote_plus(artist))
+                l = len(known_artists)
+                if l>=min_known_artists:
+                    query =  'Are you familiar with the musical artist "{}" ? (known artists: {})\nYou are now able to respond "skip" to skip to the next section, but please keep going if you can!)'.format(unquote_plus(artist),len(known_artists))
+                else:
+                    query =  'Are you familiar with the musical artist "{}" ? (known artists: {})'.format(unquote_plus(artist),len(known_artists))
                 print query
-                response = raw_input('Response ("Z" = NO, "/" = YES): ')
-                if response not in ('z','exit','/','quit'):
+                response = raw_input('Response ("Z" = NO, "/" = YES): ').lower()
+                if response not in ('z','exit','/','quit','skip'):
                     print "Invalid response, please try again"
-                    print query
-                    response = raw_input('Response ("Z" = NO, "/" = YES): ')
+                    print '\n'
                 elif response in ('exit','quit'):
                     cPickle.dump((i,known_artists),open(username+'_known_artists_INCOMPLETE.pkl','w'))
                     print '\n'
                     printer("Thanks! We've saved your progress and you can pick up where you left off by re-running the program.")
                     raw_input("Press RETURN to close the program.")
                     sys.exit()
+                elif response == 'skip':
+                    if len(known_artists)>=min_known_artists:
+                        accepted = True
+                        quit = True
+                        printer("Alright - moving on similarity judgments.")
+                        raw_input("Press RETURN to continue")
+                    else:
+                        printer("You need a set of at least {} known artists before moving on".format(min_known_artists))
+                        print '\n'
+
                 else:
                     accepted = True
                     if response == '/':
@@ -143,16 +156,6 @@ if __name__=='__main__':
         while not brk:
 
             print 'Comparisons presented this session: {} (total: {})'.format(int(done),int(done_total))
-            #print "Comparisons with unknown artists: {}\n".format(int(unknown))
-
-
-            # if done>0 and done%50==0 and top!=last_bin:
-            #     prop_missed = unknown/done
-            #     if prop_missed>0.5:
-            #         old_top = top
-            #         top = top_artist_bins.next()
-            #         sample_set = sorted(artist_dict,key=artist_dict.get)[:top]
-            #         print "Looks like you don't know many of these artists. That's OK; let's switch from the top {} to the top {} artists.".format(old_top,top)
 
             a,b,c=np.random.choice(sample_set,size=3,replace=False)
             good_comp_found = False
