@@ -22,9 +22,11 @@ gl.set_runtime_config('GRAPHLAB_FILEIO_MAXIMUM_CACHE_CAPACITY_PER_FILE',10000000
 
 
 d_lda = 'lda_tests_100iter/'
+#d_mf = 'NMF_tests/'
+d_mf = 'NMF_tests_10iter/'
 #d_mf = 'MF_tests/'
-d_mf = 'lda_tests_artists/'
-k_range = np.arange(140,201,10)
+#d_mf = 'lda_tests_artists/'
+k_range = np.arange(70,201,10)
 lastfm_data_dir = 'lastfm_top_similar_artists_new'
 
 N = 250
@@ -101,7 +103,6 @@ for m in model_dict:
         last = result[['query_label','reference_label','rank']].unstack(('rank','reference_label'),new_column_name='knn').sort('query_label').apply(lambda row: [row['knn'][i] for i in xrange(1,N+1)])
 
     for k in k_range:
-
 
         with open(model_dict[m],'a') as fout:
             print 'K=%s' % k

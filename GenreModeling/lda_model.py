@@ -71,6 +71,7 @@ if doc_basis == 'user':
         docs = gl.SArray("doc_array")
 # otherwise generate the doc_array from the raw LDA vectors from Spark
     else:
+        raise("This should no longer be handled by this script")
         print "loading data..."
         raw_docs = gl.SArray("LDA_vectors/")
         vocab_idx = {}
