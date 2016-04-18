@@ -1,4 +1,4 @@
-# IPYTHON=1 spark-1.6.0-bin-hadoop2.6/bin/pyspark --driver-memory=110G
+# IPYTHON=1 spark-1.6.0-bin-hadoop2.6/bin/pyspark --driver-memory=190G
 
 from pyspark.mllib.recommendation import ALS, MatrixFactorizationModel, Rating
 from pyspark.sql.types import StructField, StructType, IntegerType, StringType, ArrayType, MapType, FloatType
@@ -10,7 +10,7 @@ import os
 d = 'NMF_tests_10iter/'
 n_iter = 10
 
-k_range = np.arange(150,201,10)
+k_range = np.arange(200,201,10)
 split = False
 #alpha_range = [0.0001,0.001,0.01,0.05,1.0,5,10]
 #reg_range =[1e-8,1e-04,0.01,0.1,0.5,1.0]

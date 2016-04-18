@@ -10,7 +10,7 @@ network = pylast.LastFMNetwork(api_key=API_KEY, api_secret=API_SECRET)
 
 artists = pd.read_table("data/vocab_idx",header=None,names=['artist','idx'])
 
-start = 0
+start = 84079
 with open(outfile,'a') as fout:
     for i,a in enumerate(artists['artist']):
         if i<start:

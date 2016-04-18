@@ -26,7 +26,7 @@ d_lda = 'lda_tests_100iter/'
 d_mf = 'NMF_tests_10iter/'
 #d_mf = 'MF_tests/'
 #d_mf = 'lda_tests_artists/'
-k_range = np.arange(70,201,10)
+k_range = np.arange(150,201,10)
 lastfm_data_dir = 'lastfm_top_similar_artists_new'
 
 N = 250
@@ -88,6 +88,7 @@ for out_file in (out_file_mf,out_file_lda):
 
 
 model_dict = {'mf':out_file_mf}#,'lda':out_file_lda}
+
 
 for m in model_dict:
 
