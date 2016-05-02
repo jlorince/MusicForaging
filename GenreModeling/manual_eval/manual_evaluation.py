@@ -4,7 +4,6 @@ from urllib import unquote_plus
 import time
 import cPickle
 import os
-from math import factorial
 import sys
 import textwrap
 
@@ -26,7 +25,7 @@ if __name__=='__main__':
         debug = False
 
 
-    artist_features = np.load('artist_features_100.npy')
+    #artist_features = np.load('artist_features_100.npy')
 
     # top_artist_bins = [1000,500,250,100,50,25]
     # last_bin = top_artist_bins[-1]
@@ -34,8 +33,8 @@ if __name__=='__main__':
     # top = top_artist_bins.next()
 
 
-    def calc_dist(artist_a,artist_b):
-        return cosine(artist_features[artist_dict[artist_a]],artist_features[artist_dict[artist_b]])
+   # def calc_dist(artist_a,artist_b):
+   #     return cosine(artist_features[artist_dict[artist_a]],artist_features[artist_dict[artist_b]])
 
     artist_dict = {}
     with open('vocab_idx') as fin:
@@ -48,7 +47,7 @@ if __name__=='__main__':
     username = ''
     while not username:
         printer("Please enter your name (or some unique identifier, *not* case sensitive, no spaces). If you're coming back to this after starting earlier, be sure to enter it exactly as you did before")
-        username = raw_input("Response: ")
+        username = raw_input("Response: ").lower()
 
     if os.path.exists(username+'_known_artists.pkl'):
         known_artists = cPickle.load(open(username+'_known_artists.pkl'))
@@ -66,7 +65,7 @@ if __name__=='__main__':
                 raw_input('\nPress RETURN when you\'re ready to start')
         else:
             print '\n'
-            printer("Ok, I don't see any history for you. If this seems wrong, type STOP now to stop the program, and contact Jared. Otherwise just hit RETURN.")
+            printer("Ok, I don't see any history for you. If this seems wrong, type STOP now to stop the program, and contact Jared/Kyle. Otherwise just hit RETURN.")
             result = raw_input("Response: ")
             if result.lower() == 'stop':
                 sys.exit()
@@ -124,7 +123,7 @@ if __name__=='__main__':
                         prop_known = sum(last50)/50.
                         if prop_known < 0.5:
                             while response not in ('yes','no'):
-                                printer("You knew less than half of the last 50 artists we showed you - ready to call it quits and move on to the next part?")
+                                printer("You knew less than half of the last 50 artists we showed you. You may now skip to the next part, but we would like you to keep going until you know at least {} artists. Would you like to skip now?".format(min_known_artists))
                                 response = raw_input("Response (YES or NO): ").lower()
                             if response == 'yes':
                                 quit = True
@@ -167,17 +166,19 @@ if __name__=='__main__':
             formatted_a = unquote_plus(a)
             formatted_b = unquote_plus(b)
             formatted_c = unquote_plus(c)
-            ab_dist = calc_dist(a,b)
-            bc_dist = calc_dist(b,c)
+            #ab_dist = calc_dist(a,b)
+            #bc_dist = calc_dist(b,c)
             accepted = False
             while not accepted:
                 print '\n'
                 printer('Remember, just hit RETURN if you really don\'t know or haven\'t heard of one of the artists (but if you\'re familiar with all of them, do go with your gut). Type "exit" to quit.')
                 print '\n'
-                query =  'Is "{}" more like "{}" ("Z") or "{}" ("/")? Enter "=" for equally similar.\n'.format(formatted_b,formatted_a,formatted_c)
+                #query =  'Is "{}" more like "{}" ("Z") or "{}" ("/")? Enter "=" for equally similar.\n'.format(formatted_b,formatted_a,formatted_c)
+                query =  'Is "{}" more like "{}" ("Z") or "{}" ("/")? \n'.format(formatted_b,formatted_a,formatted_c)
                 printer(query)
                 result = raw_input("Response: ").lower()
-                if result not in ('z','/','','exit','=','quit'):
+                #if result not in ('z','/','','exit','=','quit'):
+                if result not in ('z','/','','exit','quit'):
                     print "Invalid response, please try again"
                     printer(query)
                     result = raw_input("Response: ")
@@ -206,21 +207,28 @@ if __name__=='__main__':
                         comps.add(iden)
                         done+=1
                         done_total+=1
-                        if parsed_response == '=':
-                            agree = 2
-                            if debug:
-                                print 'According to our model: {}<=>{} distance={:.2f},{}<=>{} distance={:.2f}'.format(
-                                    formatted_a,formatted_b,ab_dist,formatted_b,formatted_c,bc_dist)
-                        else:
-                            if (ab_dist>bc_dist and parsed_response==c) or (ab_dist<bc_dist and parsed_response==a):
-                                agree=1
-                            else:
-                                agree=0
-                            if debug:
-                                print '\nOur model {}! {}<=>{} distance={:.2f}, {}<=>{} distance={:.2f}'.format(
-                                    {1:'agrees',0:'disagrees'}[agree],formatted_a,formatted_b,ab_dist,formatted_b,formatted_c,bc_dist)
 
-                        fout.write('\t'.join(map(str,[time.strftime("%Y%m%d%H%M%S"),artist_dict[a],artist_dict[b],artist_dict[c],ab_dist,bc_dist,agree]))+'\n')
+                        if result == 'z':
+                            response = 'a'
+                        elif result == '/':
+                            response = 'c'
+
+                        # if parsed_response == '=':
+                        #     agree = 2
+                        #     if debug:
+                        #         print 'According to our model: {}<=>{} distance={:.2f},{}<=>{} distance={:.2f}'.format(
+                        #             formatted_a,formatted_b,ab_dist,formatted_b,formatted_c,bc_dist)
+                        # else:
+                        #     if (ab_dist>bc_dist and parsed_response==c) or (ab_dist<bc_dist and parsed_response==a):
+                        #         agree=1
+                        #     else:
+                        #         agree=0
+                        #     if debug:
+                        #         print '\nOur model {}! {}<=>{} distance={:.2f}, {}<=>{} distance={:.2f}'.format(
+                        #             {1:'agrees',0:'disagrees'}[agree],formatted_a,formatted_b,ab_dist,formatted_b,formatted_c,bc_dist)
+
+                        #fout.write('\t'.join(map(str,[time.strftime("%Y%m%d%H%M%S"),artist_dict[a],artist_dict[b],artist_dict[c],ab_dist,bc_dist,agree]))+'\n')
+                        fout.write('\t'.join(map(str,[time.strftime("%Y%m%d%H%M%S"),artist_dict[a],artist_dict[b],artist_dict[c],response]))+'\n')
 
                         print '\n'+'-'*50+'\n'
 
