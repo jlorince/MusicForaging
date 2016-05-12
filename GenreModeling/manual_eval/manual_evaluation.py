@@ -184,7 +184,8 @@ if __name__=='__main__':
                     result = raw_input("Response: ")
                 elif result=='':
                     print "That's ok, moving on...."
-                    fout.write('\t'.join(map(str,[time.strftime("%Y%m%d%H%M%S"),artist_dict[a],artist_dict[b],artist_dict[c],ab_dist,bc_dist,-1]))+'\n')
+                    fout.write('\t'.join(map(str,[time.strftime("%Y%m%d%H%M%S"),artist_dict[a],artist_dict[b],artist_dict[c],-1]))+'\n')
+
                     print '-'*50
                     accepted=True
                     comps.add(iden)
