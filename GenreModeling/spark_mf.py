@@ -1,4 +1,4 @@
-# IPYTHON=1 spark-1.6.0-bin-hadoop2.6/bin/pyspark --driver-memory=190G
+
 
 from pyspark.mllib.recommendation import ALS, MatrixFactorizationModel, Rating
 from pyspark.sql.types import StructField, StructType, IntegerType, StringType, ArrayType, MapType, FloatType

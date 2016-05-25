@@ -13,7 +13,7 @@
 
 # df.write.partitionBy("userid").text("scrobbles2")
 
-# qsub -I -q interactive -l nodes=1:ppn=1,walltime=8:00:00
+# qsub -I -q interactive -l nodes=1:ppn=1,walltime=2:00:00
 # qsub -l nodes=1:ppn=1,vmem=16gb,walltime=24:00:00 -m e go.sh
 
 import MySQLdb
@@ -24,7 +24,7 @@ cursor.execute("SET SQL_BIG_SELECTS=1;")
 cursor.execute("SET time_zone = '+00:00';")
 cursor.execute("set sql_select_limit=18446744073709551615;")
 
-n_users = cursor.execute("select user_id from lastfm_users where sample_playcount>=323000;")
+n_users = cursor.execute("select user_id from lastfm_users where sample_playcount>=1000;")
 users = [u[0] for u in cursor.fetchall()]
 
 for i,u in enumerate(users):

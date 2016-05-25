@@ -1,0 +1,9 @@
+2016-05-24 22:05:36,144	[INFO]	Input arguments: Namespace(datadir='/home/jlorince/scrobbles/', dist_thresh=0.2, distance_metric='cosine', feature_path='/Users/jaredlorince/git/MusicForaging/GenreModeling/data/features/lda_artists/features_190.npy', min_patch_length=5, n=4, patch_basis='patch_idx_shuffle', pickledir='/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/', preprocess=False, rawtext=False, resultdir='/home/jlorince/results/', session_thresh=1800, suppdir='/Users/jaredlorince/git/MusicForaging/GenreModeling/data/', verbose=False)
+2016-05-24 22:05:36,159	[INFO]	Pool started
+2016-05-24 22:05:36,159	[INFO]	Starting preprocessing
+2016-05-24 22:05:45,466	[INFO]	User 10000238 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/10000238.pkl)
+2016-05-24 22:05:46,703	[INFO]	User 10000403 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/10000403.pkl)
+2016-05-24 22:05:49,356	[INFO]	User 10000074 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/10000074.pkl)
+2016-05-24 22:05:50,584	[INFO]	User 10000453 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/10000453.pkl)
+2016-05-24 22:06:09,216	[INFO]	User 1000023 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/1000023.pkl)
+2016-05-24 22:06:14,029	[INFO]	User 10000942 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/10000942.pkl)
