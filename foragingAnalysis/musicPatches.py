@@ -8,7 +8,6 @@ from scipy.spatial.distance import cosine,euclidean,pdist
 import numpy as np
 from itertools import chain,tee, izip, groupby
 from functools import partial
-import parmap
 import time
 import datetime
 import logging
