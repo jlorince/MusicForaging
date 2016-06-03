@@ -39,6 +39,8 @@ class setup(object):
         self.n_features = features.shape[1]
         self.features = {i:features[i] for i in xrange(len(features))}
 
+    def userFromFile(fi):
+        return fi.split('/')[-1].split('_')[:-4]
 
 
     # set up processing pool and run all analyses specified in args
@@ -69,12 +71,20 @@ class setup(object):
             k,v = line.strip().split('\t')
             self.artist_idx_feature_map[float(k)] = int(v)
 
-        #self.features = np.load(self.args.feature_path)
 
         if args.rawtext:
-            files = glob(self.args.datadir+'*.txt')
+            if self.args.skip_complete:
+                done =  set([userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_output)])
+            else:
+                done = set()
+            files = [fi for fi in glob(self.args.datadir+'*.txt') if userFromFile(fi) not in done]
         else:
-            files = glob(self.args.pickledir+'*.pkl')
+            if self.args.skip_complete:
+                done =  set([userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_output)])
+            else:
+                done = set()
+            files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_input) and userFromFile(fi) not in done]
+
         self.rootLogger.debug(files)
         func_partial = partial(self.processor,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
         self.pool.map(func_partial,files)
@@ -155,7 +165,7 @@ class setup(object):
     def processor(self,fi,output_dir,is_sorted=True,features=None,dist='cosine',session_threshold=None,dist_threshold=0.2,min_patch_length=5,artist_idx_feature_map=None):
 
         # get user_id from filename
-        user = fi.split('/')[-1][:-4]
+        user = userFromFile(fi)
         self.rootLogger.debug('processor called (user {})'.format(user))
 
         if fi.endswith('.txt'):
@@ -308,7 +318,7 @@ class setup(object):
 
     # generate patch summary for each user, and save resulting pickle
     def patch_summary(self,fi,basis,metric):
-        user = fi.split('/')[-1][:-4]
+        user = userFromFile(fi)
         df = pd.read_pickle(fi)
         df['features'] = df['artist_idx'].apply(lambda idx: self.get_features(idx))
         if basis=='block':
@@ -324,8 +334,11 @@ class setup(object):
 
     # run patch summaries for all users
     def summarize_patches(self):
-
-        files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi]
+        if self.args.skip_complete:
+            done =  set([userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' in fi and fi.startswith(self.args.prefix_output)])
+        else:
+            done = set()
+        files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_input) and userFromFile(fi) not in done]
         func_partial = partial(self.patch_summary,basis=self.args.patch_basis,metric=self.args.distance_metric)
         self.pool.map(func_partial,files)
 
@@ -350,6 +363,9 @@ if __name__ == '__main__':
     parser.add_argument("--feature_path", help="path to artist feature matrix",default='/home/jlorince/lda_tests_artists/features_190.npy')
     parser.add_argument("--distance_metric", help="distance metric",type=str,default='cosine')
     parser.add_argument("--patch_basis", help="If specified, perform patch summaries with the given basis",type=str,choices=['block','patch_idx_shuffle','patch_index_simple'])
+    parser.add_argument("--skip_complete", help="If specified, check for existing files and skip if they exist",action='store_true')
+    parser.add_argument("--prefix_input", help="distance metric",type=str,default='')
+    parser.add_argument("--prefix_output", help="distance metric",type=str,default='')
 
     args = parser.parse_args()
 
