@@ -361,7 +361,7 @@ if __name__ == '__main__':
     parser.add_argument("--min_patch_length", help="minimum patch length",type=int,default=None) # 5
     parser.add_argument("--dist_thresh", help="distance threshold defining patch neigborhood",type=float,default=None) # 0.2
     parser.add_argument("-n", help="number of processes in processor pool",type=int,default=1)
-    parser.add_argument("--feature_path", help="path to artist feature matrix",default='/home/jlorince/lda_tests_artists/features_190.npy')
+    parser.add_argument("--feature_path", help="path to artist feature matrix",default=None) # '/home/jlorince/lda_tests_artists/features_190.npy'
     parser.add_argument("--distance_metric", help="distance metric",type=str,default='cosine')
     parser.add_argument("--patch_basis", help="If specified, perform patch summaries with the given basis",type=str,choices=['block','patch_idx_shuffle','patch_index_simple'])
     parser.add_argument("--skip_complete", help="If specified, check for existing files and skip if they exist",action='store_true')

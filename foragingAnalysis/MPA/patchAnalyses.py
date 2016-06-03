@@ -44,7 +44,7 @@ class analyze(object):
         if self.args.jumpdists:
 
             self.rootLogger.info("Starting jump distance analysis")
-            n_bins=10.
+            n_bins=100.
             bin_width = 1/n_bins
             bins = np.arange(0,1+bin_width,1/n_bins)
             func_partial = partial(self.artist_jump_distributions,bins=bins,self_jumps=False)
