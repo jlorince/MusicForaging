@@ -1,3 +1,0 @@
-2016-06-03 10:11:36,420	[INFO]	Input arguments: Namespace(datadir='/Users/jaredlorince/git/MusicForaging/testData/scrobbles/', dist_thresh=0.2, distance_metric='cosine', feature_path='/Users/jaredlorince/git/MusicForaging/GenreModeling/data/features/lda_artists/features_190.npy', min_patch_length=5, n=4, patch_basis=None, pickledir='/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/', preprocess=True, rawtext=False, resultdir='/home/jlorince/results/', session_thresh=1800, suppdir='/Users/jaredlorince/git/MusicForaging/GenreModeling/data/', verbose=False)
-2016-06-03 10:11:36,671	[INFO]	Pool started
-2016-06-03 10:11:36,671	[INFO]	Starting preprocessing
