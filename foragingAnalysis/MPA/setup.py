@@ -40,7 +40,7 @@ class setup(object):
         self.features = {i:features[i] for i in xrange(len(features))}
 
     @staticmethod
-    def self.userFromFile(self,fi):
+    def userFromFile(self,fi):
         return fi.split('/')[-1].split('_')[:-4]
 
 
