@@ -41,7 +41,7 @@ class setup(object):
 
     @staticmethod
     def userFromFile(fi):
-        return fi.split('/')[-1].split('_')[:-4]
+        return fi.split('/')[-1].split('_')[-1][:-4]
 
 
     # set up processing pool and run all analyses specified in args
