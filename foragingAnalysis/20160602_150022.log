@@ -1,0 +1,14 @@
+2016-06-02 15:00:22,432	[INFO]	Input arguments: Namespace(datadir='/Users/jaredlorince/git/MusicForaging/testData/scrobbles/', dist_thresh=0.2, distance_metric='cosine', feature_path='/Users/jaredlorince/git/MusicForaging/GenreModeling/data/features/lda_artists/features_190.npy', min_patch_length=5, n=4, patch_basis=None, pickledir='/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/', preprocess=True, rawtext=True, resultdir='/home/jlorince/results/', session_thresh=1800, suppdir='/Users/jaredlorince/git/MusicForaging/GenreModeling/data/', verbose=False)
+2016-06-02 15:00:22,739	[INFO]	Pool started
+2016-06-02 15:00:22,740	[INFO]	Starting preprocessing
+2016-06-02 15:00:45,655	[INFO]	User 10000074 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles/10000074.txt)
+2016-06-02 15:01:06,238	[INFO]	User 10000238 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles/10000238.txt)
+2016-06-02 15:01:14,066	[INFO]	User 1000023 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles/1000023.txt)
+2016-06-02 15:01:18,858	[INFO]	User 10000403 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles/10000403.txt)
+2016-06-02 15:01:29,989	[INFO]	User 10000453 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles/10000453.txt)
+2016-06-02 15:01:38,444	[INFO]	User 10000643 SKIPPED (40392.0 non null, 8.0% null) (/Users/jaredlorince/git/MusicForaging/testData/scrobbles/10000643.txt)
+2016-06-02 15:01:48,266	[INFO]	User 10000874 SKIPPED (4573.0 non null, 16.5% null) (/Users/jaredlorince/git/MusicForaging/testData/scrobbles/10000874.txt)
+2016-06-02 15:02:24,932	[INFO]	User 10000933 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles/10000933.txt)
+2016-06-02 15:02:26,885	[INFO]	User 10000942 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles/10000942.txt)
+2016-06-02 15:02:26,886	[INFO]	Preprocessing complete
+2016-06-02 15:02:26,886	[INFO]	Pool closed

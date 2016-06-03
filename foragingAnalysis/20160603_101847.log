@@ -1,0 +1,4 @@
+2016-06-03 10:18:47,794	[INFO]	Input arguments: Namespace(datadir='/Users/jaredlorince/git/MusicForaging/testData/scrobbles/', dist_thresh=0.2, distance_metric='cosine', feature_path='/Users/jaredlorince/git/MusicForaging/GenreModeling/data/features/lda_artists/features_190.npy', min_patch_length=5, n=4, patch_basis=None, pickledir='/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/', preprocess=True, rawtext=False, resultdir='/home/jlorince/results/', session_thresh=1800, suppdir='/Users/jaredlorince/git/MusicForaging/GenreModeling/data/', verbose=False)
+2016-06-03 10:18:47,976	[INFO]	Pool started
+2016-06-03 10:18:47,977	[INFO]	Starting preprocessing
+2016-06-03 10:19:05,131	[INFO]	User 10000074 processed successfully (/Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/10000074.pkl)

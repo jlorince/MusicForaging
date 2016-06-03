@@ -31,7 +31,8 @@ class C(object):
 
     def run_p(self):
         func_partial = partial(self.raw_processor,prefix='blah',somedict=d)
-        result = self.pool.map(func_partial, self.files)
+        result = self.pool.amap(func_partial, self.files)
+        #result.get()
 
 
 
@@ -71,8 +72,16 @@ if __name__ == '__main__':
     # pool.close()
     # pool.join()
     c = C(files)
-    c.run_p()
+    try:
+        c.run_p()
+    except KeyboardInterrupt:
+        print 'caught'
+        c.pool.close()
+        sys.exit()
 
     #pool.map_async(raw_processor,)
 
+
+
+#python musicPatches.py -p -r --suppdir /Users/jaredlorince/git/MusicForaging/GenreModeling/data/ --pickledir /Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/ -n 4 --feature_path /Users/jaredlorince/git/MusicForaging/GenreModeling/data/features/lda_artists/features_190.npy
 
