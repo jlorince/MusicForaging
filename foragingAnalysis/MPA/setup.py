@@ -39,7 +39,8 @@ class setup(object):
         self.n_features = features.shape[1]
         self.features = {i:features[i] for i in xrange(len(features))}
 
-    def userFromFile(fi):
+    @staticmethod
+    def self.userFromFile(self,fi):
         return fi.split('/')[-1].split('_')[:-4]
 
 
@@ -74,16 +75,16 @@ class setup(object):
 
         if args.rawtext:
             if self.args.skip_complete:
-                done =  set([userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_output)])
+                done =  set([self.userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_output)])
             else:
                 done = set()
-            files = [fi for fi in glob(self.args.datadir+'*.txt') if userFromFile(fi) not in done]
+            files = [fi for fi in glob(self.args.datadir+'*.txt') if self.userFromFile(fi) not in done]
         else:
             if self.args.skip_complete:
-                done =  set([userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_output)])
+                done =  set([self.userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_output)])
             else:
                 done = set()
-            files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_input) and userFromFile(fi) not in done]
+            files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_input) and self.userFromFile(fi) not in done]
 
         self.rootLogger.debug(files)
         func_partial = partial(self.processor,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
@@ -165,7 +166,7 @@ class setup(object):
     def processor(self,fi,output_dir,is_sorted=True,features=None,dist='cosine',session_threshold=None,dist_threshold=0.2,min_patch_length=5,artist_idx_feature_map=None):
 
         # get user_id from filename
-        user = userFromFile(fi)
+        user = self.userFromFile(fi)
         self.rootLogger.debug('processor called (user {})'.format(user))
 
         if fi.endswith('.txt'):
@@ -318,7 +319,7 @@ class setup(object):
 
     # generate patch summary for each user, and save resulting pickle
     def patch_summary(self,fi,basis,metric):
-        user = userFromFile(fi)
+        user = self.userFromFile(fi)
         df = pd.read_pickle(fi)
         df['features'] = df['artist_idx'].apply(lambda idx: self.get_features(idx))
         if basis=='block':
@@ -335,10 +336,10 @@ class setup(object):
     # run patch summaries for all users
     def summarize_patches(self):
         if self.args.skip_complete:
-            done =  set([userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' in fi and fi.startswith(self.args.prefix_output)])
+            done =  set([self.userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' in fi and fi.startswith(self.args.prefix_output)])
         else:
             done = set()
-        files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_input) and userFromFile(fi) not in done]
+        files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_input) and self.userFromFile(fi) not in done]
         func_partial = partial(self.patch_summary,basis=self.args.patch_basis,metric=self.args.distance_metric)
         self.pool.map(func_partial,files)
 
