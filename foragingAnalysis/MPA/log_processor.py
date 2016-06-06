@@ -12,7 +12,8 @@ with open(logfi) as fin:
 with open('joblist.txt') as fin, open('joblist_partial.txt','w') as fout:
     for line in fin:
         line = line.strip()
-        if line[line.rfind('/'):-1] in done:
+        break
+        if line[line.rfind('/'):] in done:
             continue
         else:
             fout.write(line+'\n')
