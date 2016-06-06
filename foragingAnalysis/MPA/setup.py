@@ -24,15 +24,15 @@ class setup(object):
         log_filename = now.strftime('setup_%Y%m%d_%H%M%S.log')
         logFormatter = logging.Formatter("%(asctime)s\t[%(levelname)s]\t%(message)s")
         self.rootLogger = logging.getLogger()
-        fileHandler = logging.FileHandler(log_filename)
-        fileHandler.setFormatter(logFormatter)
-        self.rootLogger.addHandler(fileHandler)
+        #fileHandler = logging.FileHandler(log_filename)
+        #fileHandler.setFormatter(logFormatter)
+        #self.rootLogger.addHandler(fileHandler)
         consoleHandler = logging.StreamHandler()
         consoleHandler.setFormatter(logFormatter)
         self.rootLogger.addHandler(consoleHandler)
         self.rootLogger.setLevel(logging_level)
 
-        self.rootLogger.info("Input arguments: "+str(args))
+        #self.rootLogger.info("Input arguments: "+str(args))
 
         features = np.load(self.args.feature_path)
         self.n_features = features.shape[1]
@@ -46,21 +46,17 @@ class setup(object):
     # set up processing pool and run all analyses specified in args
     def run(self):
 
-        self.pool = Pool(self.args.n)
-        self.rootLogger.info("Pool started")
-
         if self.args.preprocess:
-            self.rootLogger.info("Starting preprocessing")
+            #self.rootLogger.info("Starting preprocessing")
             self.preprocess()
-            self.rootLogger.info("Preprocessing complete")
+            #self.rootLogger.info("Preprocessing complete")
 
         if self.args.patch_basis is not None:
-            self.rootLogger.info("Starting patch summaries")
+            #self.rootLogger.info("Starting patch summaries")
             self.summarize_patches()
-            self.rootLogger.info("Patch summaries complete")
+            #self.rootLogger.info("Patch summaries complete")
 
-        self.pool.close()
-        self.rootLogger.info("Pool closed")
+
 
 
     # Calls preprocessing code to load raw text files and convert to dataframes, adding features, disances, etc.
@@ -71,25 +67,34 @@ class setup(object):
             k,v = line.strip().split('\t')
             self.artist_idx_feature_map[float(k)] = int(v)
 
+        if self.f:
+            self.processor(fi=self.args.f,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
 
-        if args.rawtext:
-            if self.args.skip_complete:
-                done =  set([self.userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_output)])
-            else:
-                done = set()
-            files = [fi for fi in glob(self.args.datadir+'*.txt') if self.userFromFile(fi) not in done]
         else:
-            if self.args.skip_complete:
-                done =  set([self.userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_output)])
+            if args.rawtext:
+                if self.args.skip_complete:
+                    done =  set([self.userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_output)])
+                else:
+                    done = set()
+                files = [fi for fi in glob(self.args.datadir+'*.txt') if self.userFromFile(fi) not in done]
             else:
-                done = set()
-            files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_input) and self.userFromFile(fi) not in done]
+                if self.args.skip_complete:
+                    done =  set([self.userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_output)])
+                else:
+                    done = set()
+                files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_input) and self.userFromFile(fi) not in done]
 
-        self.n_files = len(files)
+            self.n_files = len(files)
 
-        self.rootLogger.debug(files)
-        func_partial = partial(self.processor,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
-        self.pool.map(func_partial,files)
+            self.rootLogger.debug(files)
+
+            func_partial = partial(self.processor,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
+
+            self.pool = Pool(self.args.n)
+            self.rootLogger.info("Pool started")
+            self.pool.map(func_partial,files)
+            self.pool.close()
+            self.rootLogger.info("Pool closed")
 
     # Jensen Shannon Distance (Sqrt of Jensen Shannon Divergence)
     @staticmethod
@@ -297,7 +302,7 @@ class setup(object):
 
         return None
 
-    # Pandas calculate patch summary measures (mean feature array, diversity, etc.). Applied to each patch
+    # calculate patch summary measures (mean feature array, diversity, etc.). Applied to each patch
     def patch_measures(self,df,agg_stats=True,metric='cosine'):
         first = df.iloc[0]
         n = len(df)
@@ -336,13 +341,22 @@ class setup(object):
 
     # run patch summaries for all users
     def summarize_patches(self):
-        if self.args.skip_complete:
-            done =  set([self.userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' in fi and fi.startswith(self.args.prefix_output)])
+
+        if self.args.f:
+            self.patch_summary(fi=self.args.f,basis=self.args.patch_basis,metric=self.args.distance_metric)
+
         else:
-            done = set()
-        files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_input) and self.userFromFile(fi) not in done]
-        func_partial = partial(self.patch_summary,basis=self.args.patch_basis,metric=self.args.distance_metric)
-        self.pool.map(func_partial,files)
+
+            if self.args.skip_complete:
+                done =  set([self.userFromFile(fi) for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' in fi and fi.startswith(self.args.prefix_output)])
+            else:
+                done = set()
+            files = [fi for fi in glob(self.args.pickledir+'*.pkl') if '_patches_' not in fi and fi.startswith(self.args.prefix_input) and self.userFromFile(fi) not in done]
+            func_partial = partial(self.patch_summary,basis=self.args.patch_basis,metric=self.args.distance_metric)
+            self.rootLogger.info("Pool started")
+            self.pool.map(func_partial,files)
+            self.pool.close()
+            self.rootLogger.info("Pool closed")
 
 
 
