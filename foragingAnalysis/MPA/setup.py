@@ -366,7 +366,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser("Need to add some more documentation")
 
-    parser.add_argument("-f", "--file",help="If provided, run setup for this file only",default=None)
+    parser.add_argument("-f", "--file",help="If provided, run setup for this file only",default=None,type=str)
     parser.add_argument("-v", "--verbose", help="increase output verbosity",action="store_true")
     parser.add_argument("-p", "--preprocess", help="perform preprocessing of listening histories",action="store_true")
     parser.add_argument("-r", "--rawtext",help="Load scrobbles from raw text files. If not specififed, assumes files are already pickled and saved in `pickledir`",action="store_true")
