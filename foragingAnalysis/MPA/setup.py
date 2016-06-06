@@ -387,7 +387,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if args.file:
+    if args.file is None:
         from pathos.multiprocessing import ProcessingPool as Pool
 
     mpa = setup(args,logging_level=logging.INFO)
