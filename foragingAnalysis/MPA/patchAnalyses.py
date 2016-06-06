@@ -1,6 +1,6 @@
 import pandas as pd
 from glob import glob
-from pathos.multiprocessing import ProcessingPool as Pool
+#from pathos.multiprocessing import ProcessingPool as Pool
 import sys
 import argparse
 from scipy.spatial.distance import cosine,euclidean,pdist
