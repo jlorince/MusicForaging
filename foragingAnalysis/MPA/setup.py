@@ -68,7 +68,7 @@ class setup(object):
             self.artist_idx_feature_map[float(k)] = int(v)
 
         if self.f:
-            self.processor(fi=self.args.f,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
+            self.processor(fi=self.args.file,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
 
         else:
             if args.rawtext:
@@ -342,8 +342,8 @@ class setup(object):
     # run patch summaries for all users
     def summarize_patches(self):
 
-        if self.args.f:
-            self.patch_summary(fi=self.args.f,basis=self.args.patch_basis,metric=self.args.distance_metric)
+        if self.args.file:
+            self.patch_summary(fi=self.args.file,basis=self.args.patch_basis,metric=self.args.distance_metric)
 
         else:
 
