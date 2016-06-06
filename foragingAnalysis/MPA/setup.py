@@ -67,7 +67,7 @@ class setup(object):
             k,v = line.strip().split('\t')
             self.artist_idx_feature_map[float(k)] = int(v)
 
-        if self.file:
+        if self.args.file:
             self.processor(fi=self.args.file,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
 
         else:
