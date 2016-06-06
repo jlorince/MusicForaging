@@ -364,7 +364,7 @@ class setup(object):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser("Need to add some more documentation")
 
     parser.add_argument("-f", "--file",help="If provided, run setup for this file only",default=None)
     parser.add_argument("-v", "--verbose", help="increase output verbosity",action="store_true")
