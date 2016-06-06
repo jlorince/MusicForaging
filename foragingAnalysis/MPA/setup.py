@@ -350,8 +350,9 @@ class setup(object):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser('-f','--file',help="if specified, run specified on this single file only",default=None,type=str)
+    parser = argparse.ArgumentParser()
 
+    parser.add_argument("-f", "--file",help="If provided, run setup for this file only",default=None)
     parser.add_argument("-v", "--verbose", help="increase output verbosity",action="store_true")
     parser.add_argument("-p", "--preprocess", help="perform preprocessing of listening histories",action="store_true")
     parser.add_argument("-r", "--rawtext",help="Load scrobbles from raw text files. If not specififed, assumes files are already pickled and saved in `pickledir`",action="store_true")
@@ -371,9 +372,9 @@ if __name__ == '__main__':
     parser.add_argument("--prefix_output", help="output file prefix",type=str,default='')
 
     args = parser.parse_args()
-    if not args.f:
-        from pathos.multiprocessing import ProcessingPool as Pool
 
+    if args.f:
+        from pathos.multiprocessing import ProcessingPool as Pool
 
     mpa = setup(args,logging_level=logging.INFO)
     mpa.run()
