@@ -214,7 +214,7 @@ class setup(object):
 
             self.rootLogger.debug('features and dists done (user {})'.format(user))
 
-        if session_threshold is not None:
+        if (session_threshold is not None) and (session_threshold>0):
             if 'td' not in df.columns:
                 df['td'] = df['ts']-df.shift(1)['ts']
                 df['td'] = df['td'].astype(int) / 10**9
@@ -226,6 +226,9 @@ class setup(object):
                 session_indices.append(session_idx)
             df['session'] = session_indices
             self.rootLogger.debug('session indices done (user {})'.format(user))
+
+        elif session_threshold == 0:
+            df['session'] = 0
 
         if (min_patch_length is not None) and (dist_threshold is not None):
 
@@ -295,6 +298,7 @@ class setup(object):
             self.rootLogger.debug('artist blocks done (user {})'.format(user))
 
         cols = ['ts','artist_idx','dist','session','patch_idx_shuffle','patch_idx_simple','block']
+
         df = df[list(set(df.columns).intersection(cols))]
         df.to_pickle('{}{}.pkl'.format(output_dir,user))
 
@@ -374,7 +378,7 @@ if __name__ == '__main__':
     parser.add_argument("--datadir", help="specify base directory containing input files",default='/home/jlorince/scrobbles/')
     parser.add_argument("--suppdir", help="specify supplementary data location",default='/home/jlorince/support/')
     parser.add_argument("--resultdir", help="specify results location",default='/home/jlorince/results/')
-    parser.add_argument("--session_thresh", help="session segmentation threshold",type=int,default=None) # 1800
+    parser.add_argument("--session_thresh", help="session segmentation threshold. Use 0 for no time-based segmentation.",type=int,default=None) # 1800
     parser.add_argument("--min_patch_length", help="minimum patch length",type=int,default=None) # 5
     parser.add_argument("--dist_thresh", help="distance threshold defining patch neigborhood",type=float,default=None) # 0.2
     parser.add_argument("-n", help="number of processes in processor pool",type=int,default=1)
