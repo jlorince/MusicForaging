@@ -214,7 +214,10 @@ class setup(object):
 
             self.rootLogger.debug('features and dists done (user {})'.format(user))
 
-        if (session_threshold is not None) and (session_threshold>0):
+        if session_threshold == 0:
+            df['session'] = 0
+
+        elif (session_threshold is not None) and (session_threshold>0):
             if 'td' not in df.columns:
                 df['td'] = df['ts']-df.shift(1)['ts']
                 df['td'] = df['td'].astype(int) / 10**9
@@ -227,8 +230,7 @@ class setup(object):
             df['session'] = session_indices
             self.rootLogger.debug('session indices done (user {})'.format(user))
 
-        elif session_threshold == 0:
-            df['session'] = 0
+
 
         if (min_patch_length is not None) and (dist_threshold is not None):
 
