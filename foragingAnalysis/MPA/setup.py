@@ -71,7 +71,7 @@ class setup(object):
             result = self.processor(fi=self.args.file,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
 
             if self.args.patch_len_dist:
-                user,vlas_simple
+                user,vals_simple,vals_shuffle = result
                 with open(self.args.resultdir+user,'a') as fout:
                     if vals_simple is not None:
                         fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.astype(str))+'\n')
