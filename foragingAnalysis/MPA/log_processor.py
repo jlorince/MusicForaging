@@ -24,4 +24,3 @@ with open('joblist.txt') as fin, open('joblist_partial.txt','w') as fout:
             continue
         else:
             fout.write(line+'\n')
-

@@ -92,7 +92,15 @@ class setup(object):
 
             self.pool = Pool(self.args.n)
             self.rootLogger.info("Pool started")
-            self.pool.map(func_partial,files)
+            if self.args.patch_len_dist:
+                with open(self.args.resultdir+'patch_len_dists_simple','a') as fout_simple,\
+                     open(self.args.resultdir+'patch_len_dists_shuffle','a') as fout_shuffle:
+                    for user,vals_simple,vals_shuffle in self.pool.imap(func_partial,files):
+                        if vals_simple:
+                            fout_simple.write('\t'.join([user,str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.astype(str))+'\n')
+                        fout_shuffle.write('\t'.join([user,str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
+            else:
+                self.pool.map(func_partial,files)
             self.pool.close()
             self.rootLogger.info("Pool closed")
 
@@ -302,10 +310,16 @@ class setup(object):
         cols = ['ts','artist_idx','dist','session','patch_idx_shuffle','patch_idx_simple','block']
 
         df = df[list(set(df.columns).intersection(cols))]
-        df.to_pickle('{}{}.pkl'.format(output_dir,user))
+        if self.args.save:
+            df.to_pickle('{}{}.pkl'.format(output_dir,user))
+
+        if self.args.patch_len_dist:
+            vals_simple,vals_shuffle = self.patch_length_distributions(df,bins=np.arange(0,1001,1),method=self.args.patch_len_dist)
+            self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
+            return user,vals_simple,vals_shuffle
+
 
         self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
-
         return None
 
     # calculate patch summary measures (mean feature array, diversity, etc.). Applied to each patch
@@ -364,6 +378,21 @@ class setup(object):
             self.pool.close()
             self.rootLogger.info("Pool closed")
 
+    def patch_length_distributions(self,df,bins,method):
+        if method in ('both','simple'):
+            counts_simple = np.clip(df['patch_idx_simple'].value_counts().values,0,1000)
+            vals_simple = np.histogram(counts_simple,bins=bins)[0]
+        else:
+            vals_simple = None
+        if method in ('both','shuffle'):
+            counts_shuffle = np.clip(df['patch_idx_shuffle'].value_counts().values,0,1000)
+            vals_shuffle = np.histogram(counts_shuffle,bins=bins)[0]
+        else:
+            vals_shuffle = None
+        self.rootLogger.info('patch length distribution done for user {} ({})'.format(user,fi))
+        return vals_simple,vals_shuffle
+
+
 
 
 
@@ -376,6 +405,7 @@ if __name__ == '__main__':
     parser.add_argument("-v", "--verbose", help="increase output verbosity",action="store_true")
     parser.add_argument("-p", "--preprocess", help="perform preprocessing of listening histories",action="store_true")
     parser.add_argument("-r", "--rawtext",help="Load scrobbles from raw text files. If not specififed, assumes files are already pickled and saved in `pickledir`",action="store_true")
+    parser.add_argument("-s","--save",help='save newly generated DFs',action="store_true")
     parser.add_argument("--pickledir", help="specify output dir for pickled dataframes",default='/home/jlorince/scrobbles_processed/')
     parser.add_argument("--datadir", help="specify base directory containing input files",default='/home/jlorince/scrobbles/')
     parser.add_argument("--suppdir", help="specify supplementary data location",default='/home/jlorince/support/')
@@ -390,6 +420,7 @@ if __name__ == '__main__':
     parser.add_argument("--skip_complete", help="If specified, check for existing files and skip if they exist",action='store_true')
     parser.add_argument("--prefix_input", help="inpout file prefix",type=str,default='')
     parser.add_argument("--prefix_output", help="output file prefix",type=str,default='')
+    parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",default=None,type='str',choices=['shuffle','simple','both'])
 
     args = parser.parse_args()
 

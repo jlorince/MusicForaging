@@ -43,6 +43,8 @@ class analyze(setup.setup):
         self.pool.close()
         self.rootLogger.info("Pool closed")
 
+    # calculate distribution (using histogram with specified bins)
+    # of sequential artist-to-artist distances
     def artist_jump_distributions(self,fi,bins,self_jumps=False):
         user = fi.split('/')[-1][:-4]
         df = pd.read_pickle(fi)
