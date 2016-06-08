@@ -68,7 +68,7 @@ class setup(object):
             self.artist_idx_feature_map[float(k)] = int(v)
 
         if self.args.file:
-            self.processor(fi=self.args.file,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
+            result = self.processor(fi=self.args.file,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
 
         else:
             if args.rawtext:
@@ -96,7 +96,7 @@ class setup(object):
                 with open(self.args.resultdir+'patch_len_dists_simple','a') as fout_simple,\
                      open(self.args.resultdir+'patch_len_dists_shuffle','a') as fout_shuffle:
                     for user,vals_simple,vals_shuffle in self.pool.imap(func_partial,files):
-                        if vals_simple:
+                        if vals_simple is not None:
                             fout_simple.write('\t'.join([user,str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.astype(str))+'\n')
                         fout_shuffle.write('\t'.join([user,str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
             else:
@@ -241,6 +241,8 @@ class setup(object):
 
 
         if (min_patch_length is not None) and (dist_threshold is not None):
+
+            self.rootLogger.debug('starting patch segmentation for user {})'.format(user))
 
             indices_shuffle = np.zeros(len(df),dtype=int)
             indices_simple = np.zeros(len(df),dtype=int)
@@ -389,7 +391,6 @@ class setup(object):
             vals_shuffle = np.histogram(counts_shuffle,bins=bins)[0]
         else:
             vals_shuffle = None
-        self.rootLogger.info('patch length distribution done for user {} ({})'.format(user,fi))
         return vals_simple,vals_shuffle
 
 
@@ -420,7 +421,8 @@ if __name__ == '__main__':
     parser.add_argument("--skip_complete", help="If specified, check for existing files and skip if they exist",action='store_true')
     parser.add_argument("--prefix_input", help="inpout file prefix",type=str,default='')
     parser.add_argument("--prefix_output", help="output file prefix",type=str,default='')
-    parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",default=None,type='str',choices=['shuffle','simple','both'])
+    parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",default=None,type=str,choices=['shuffle','simple','both'])
+
 
     args = parser.parse_args()
 
