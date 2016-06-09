@@ -10,6 +10,7 @@ import time
 import datetime
 import logging
 import warnings
+from scipy import sparse
 
 
 class setup(object):
@@ -74,7 +75,7 @@ class setup(object):
                 user,vals_simple,vals_shuffle = result
                 with open(self.args.resultdir+user,'a') as fout:
                     if vals_simple is not None:
-                        fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.astype(str))+'\n')
+                        fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.data)+'\n')
                     fout.write('\t'.join([user,'shuffle',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
 
 
@@ -100,16 +101,7 @@ class setup(object):
 
             self.pool = Pool(self.args.n)
             self.rootLogger.info("Pool started")
-            ### BAD BAD BAD
-            if self.args.patch_len_dist:
-                with open(self.args.resultdir+'patch_len_dists_simple','a') as fout_simple,\
-                     open(self.args.resultdir+'patch_len_dists_shuffle','a') as fout_shuffle:
-                    for user,vals_simple,vals_shuffle in self.pool.imap(func_partial,files):
-                        if vals_simple is not None:
-                            fout_simple.write('\t'.join([user,str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.astype(str))+'\n')
-                        fout_shuffle.write('\t'.join([user,str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
-            else:
-                self.pool.map(func_partial,files)
+            self.pool.map(func_partial,files)
             self.pool.close()
             self.rootLogger.info("Pool closed")
 
@@ -389,7 +381,7 @@ class setup(object):
             self.pool.close()
             self.rootLogger.info("Pool closed")
 
-    def patch_length_distributions(self,df,bins,method):
+    def patch_length_distributions(self,user,df,bins,method):
         if method in ('both','simple'):
             counts_simple = np.clip(df['patch_idx_simple'].value_counts().values,0,1000)
             vals_simple = np.histogram(counts_simple,bins=bins)[0]
@@ -400,6 +392,13 @@ class setup(object):
             vals_shuffle = np.histogram(counts_shuffle,bins=bins)[0]
         else:
             vals_shuffle = None
+
+        if self.args.patch_len_dist:
+            with open(self.args.resultdir+user,'a') as fout:
+                if vals_simple is not None:
+                    fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.data)+'\n')
+                fout.write('\t'.join([user,'shuffle',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
+
         return vals_simple,vals_shuffle
 
 
