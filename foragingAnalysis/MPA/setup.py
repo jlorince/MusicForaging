@@ -396,7 +396,7 @@ class setup(object):
         if self.args.patch_len_dist:
             with open(self.args.resultdir+user,'a') as fout:
                 if vals_simple is not None:
-                    fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.data)+'\n')
+                    fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.astype(str))+'\n')
                 fout.write('\t'.join([user,'shuffle',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
 
         return vals_simple,vals_shuffle
