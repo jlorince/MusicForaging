@@ -30,7 +30,7 @@ class analyze(setup.setup):
             bins = np.arange(0,1+bin_width,1/n_bins)
 
             if self.args.file:
-                user,vals = self.artist_jump_distributions(bins=bins,self_jumps=False)
+                user,vals = self.artist_jump_distributions(self.args.file,bins=bins,self_jumps=False)
                 with open(self.args.resultdir+user,'w') as fout:
                     fout.write(','.join(vals.astype(str))+'\n')
 
@@ -43,7 +43,7 @@ class analyze(setup.setup):
 
                 self.rootLogger.info("Starting jump distance analysis")
 
-                func_partial = partial(self.artist_jump_distributions,self.args.file,bins=bins,self_jumps=False)
+                func_partial = partial(self.artist_jump_distributions,bins=bins,self_jumps=False)
                 with open(self.args.resultdir+'jumpdists','w') as fout:
                     for user,vals in self.pool.imap(func_partial,self.listen_files):
                         fout.write(user+'\t'+','.join(vals.astype(str))+'\n')
