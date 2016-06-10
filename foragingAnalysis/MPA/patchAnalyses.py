@@ -43,7 +43,7 @@ class analyze(setup.setup):
 
                 self.rootLogger.info("Starting jump distance analysis")
 
-                func_partial = partial(self.artist_jump_distributions,bins=bins,self_jumps=False)
+                func_partial = partial(self.artist_jump_distributions,self.args.file,bins=bins,self_jumps=False)
                 with open(self.args.resultdir+'jumpdists','w') as fout:
                     for user,vals in self.pool.imap(func_partial,self.listen_files):
                         fout.write(user+'\t'+','.join(vals.astype(str))+'\n')
