@@ -23,25 +23,38 @@ class analyze(setup.setup):
     # set up processing pool and run all analyses specified in args
     def run(self):
 
-        self.pool = Pool(self.args.n)
-        self.rootLogger.info("Pool started")
 
         if self.args.jumpdists:
-
-            self.rootLogger.info("Starting jump distance analysis")
             n_bins=100.
             bin_width = 1/n_bins
             bins = np.arange(0,1+bin_width,1/n_bins)
-            func_partial = partial(self.artist_jump_distributions,bins=bins,self_jumps=False)
-            with open(self.args.resultdir+'jumpdists','w') as fout:
-                for user,vals in self.pool.imap(func_partial,self.listen_files):
-                    fout.write(user+'\t'+','.join(vals.astype(str))+'\n')
+
+            if self.args.file:
+                user,vals = self.artist_jump_distributions(bins=bins,self_jumps=False)
+                with open(self.args.resultdir+user,'w') as fout:
+                    fout.write(','.join(vals.astype(str))+'\n')
+
+
+
+            else:
+                raise('not implemented!')
+                self.pool = Pool(self.args.n)
+                self.rootLogger.info("Pool started")
+
+                self.rootLogger.info("Starting jump distance analysis")
+
+                func_partial = partial(self.artist_jump_distributions,bins=bins,self_jumps=False)
+                with open(self.args.resultdir+'jumpdists','w') as fout:
+                    for user,vals in self.pool.imap(func_partial,self.listen_files):
+                        fout.write(user+'\t'+','.join(vals.astype(str))+'\n')
+
+                self.pool.close()
+                self.rootLogger.info("Pool closed")
 
         if self.args.blockdists:
             self.rootLogger.info("Starting block distance analysis")
 
-        self.pool.close()
-        self.rootLogger.info("Pool closed")
+
 
     # calculate distribution (using histogram with specified bins)
     # of sequential artist-to-artist distances
@@ -75,6 +88,7 @@ if __name__ == '__main__':
     parser.add_argument("--pickledir", help="specify output dir for pickled dataframes",default='/home/jlorince/scrobbles_processed/')
     parser.add_argument("-n", help="number of processes in processor pool",type=int,default=1)
     parser.add_argument("--feature_path", help="path to artist feature matrix",default=None) # '/home/jlorince/lda_tests_artists/features_190.npy'
+    parser.add_argument("-f", "--file",help="If provided, run setup for this file only",default=None,type=str)
 
     ### These are all the analyses we can run:
     parser.add_argument("--jumpdists", help="generate each user's distribution of artist-artist distances",action='store_true')
@@ -83,6 +97,10 @@ if __name__ == '__main__':
 
 
     args = parser.parse_args()
+
+    if args.file is None:
+        from pathos.multiprocessing import ProcessingPool as Pool
+
 
     mpa = analyze(args,logging_level=logging.INFO)
     mpa.run()

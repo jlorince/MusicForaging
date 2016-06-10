@@ -13,6 +13,10 @@ import warnings
 from scipy import sparse
 
 
+
+#### cat $(wc -l * | grep '\s90' | gawk '{print $2}') | gawk -F $'\t' '{if ($2 == "simple") {print $1 FS $2 FS $3 FS 1 FS $4} else {print $0}}' > patch_len_dists_concat
+
+
 class setup(object):
 
     # init just takes in command line arguments and sets up logging
@@ -75,7 +79,7 @@ class setup(object):
                 user,vals_simple,vals_shuffle = result
                 with open(self.args.resultdir+user,'a') as fout:
                     if vals_simple is not None:
-                        fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.data)+'\n')
+                        fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.astype(str))+'\n')
                     fout.write('\t'.join([user,'shuffle',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
 
 
