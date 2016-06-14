@@ -56,7 +56,7 @@ class setup(object):
             self.preprocess()
             #self.rootLogger.info("Preprocessing complete")
 
-        if self.args.` is not None:
+        if self.args.patch_basis is not None:
             #self.rootLogger.info("Starting patch summaries")
             self.summarize_patches()
             #self.rootLogger.info("Patch summaries complete")
