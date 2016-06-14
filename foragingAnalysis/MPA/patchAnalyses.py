@@ -54,6 +54,9 @@ class analyze(setup.setup):
         if self.args.blockdists:
             self.rootLogger.info("Starting block distance analysis")
 
+        if self.args.diversity_dists:
+            bins = np.arange(0,1.01,.01)
+
 
 
     # calculate distribution (using histogram with specified bins)
@@ -65,6 +68,20 @@ class analyze(setup.setup):
             vals = np.histogram(df['dist'].dropna(),bins=bins)[0]
         else:
             vals = np.histogram(df['dist'][df['dist']>0],bins=bins)[0]
+        self.rootLogger.info('artist jump distances done for user {} ({})'.format(user,fi))
+        return user,vals
+
+    # calculate distribution (using histogram with specified bins)
+    # of patch diversity for each user
+
+    # awk 'FNR==1' * > diversity_dists_zeros
+    # awk 'FNR==2' * > diversity_dists_nozeros
+    def artist_jump_distributions(self,fi,bins,self_jumps=False):
+        if 'patches' not in fi:
+            raise('WRRONG DATATYPE')
+        user = fi.split('/')[-1].split('_')[0]
+        df = pd.read_pickle(fi)
+        zeros = df[df['n']>=5]['diversity']
         self.rootLogger.info('artist jump distances done for user {} ({})'.format(user,fi))
         return user,vals
 
@@ -93,6 +110,7 @@ if __name__ == '__main__':
     ### These are all the analyses we can run:
     parser.add_argument("--jumpdists", help="generate each user's distribution of artist-artist distances",action='store_true')
     parser.add_argument("--blockdists", help="",action='store_true')
+    parser.add_argument("--diversity_dists", help="generate distribution of patch diversity for each user",action='store_true')
 
 
 
