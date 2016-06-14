@@ -56,6 +56,10 @@ class analyze(setup.setup):
 
         if self.args.diversity_dists:
             bins = np.arange(0,1.01,.01)
+            zeros,nozeros = self.diversity_distributions(self.args.file,bins=bins)
+            with open(self.args.resultdir+user,'w') as fout:
+                fout.write(','.join(zeros.astype(str))+'\n')
+                fout.write(','.join(nozeros.astype(str))+'\n')
 
 
 
@@ -76,14 +80,15 @@ class analyze(setup.setup):
 
     # awk 'FNR==1' * > diversity_dists_zeros
     # awk 'FNR==2' * > diversity_dists_nozeros
-    def artist_jump_distributions(self,fi,bins,self_jumps=False):
+    def diversity_distributions(self,fi,bins):
         if 'patches' not in fi:
-            raise('WRRONG DATATYPE')
+            raise('WRONG DATATYPE')
         user = fi.split('/')[-1].split('_')[0]
         df = pd.read_pickle(fi)
-        zeros = df[df['n']>=5]['diversity']
-        self.rootLogger.info('artist jump distances done for user {} ({})'.format(user,fi))
-        return user,vals
+        zeros = np.histogram(df[df['n']>=10]['diversity'],bins=bins)
+        nozeros = np.histogram(df[(df['n']>=10)&(df['diversity']>0)]['diversity'],bins=bins)
+        self.rootLogger.info('diversity distributions done for user {} ({})'.format(user,fi))
+        return zeros,nozeros
 
     def mean_block_distances(self,fi,n=100):
         user = fi.split('/')[-1][:-4]
