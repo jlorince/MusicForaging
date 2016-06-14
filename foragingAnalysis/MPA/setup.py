@@ -56,7 +56,7 @@ class setup(object):
             self.preprocess()
             #self.rootLogger.info("Preprocessing complete")
 
-        if self.args.patch_basis is not None:
+        if self.args.` is not None:
             #self.rootLogger.info("Starting patch summaries")
             self.summarize_patches()
             #self.rootLogger.info("Patch summaries complete")
@@ -363,8 +363,8 @@ class setup(object):
             raise("Invalid patch basis")
         result = df.groupby(basis).apply(self.patch_measures,agg_stats,metric)
         #result['start_idx'] = result['n'].cumsum().shift(1).fillna(0).astype(int)
-        result.reset_index(drop=True).to_pickle('{}{}_patches_{}.pkl'.format(self.args.pickledir,user,basis))
-        self.rootLogger.info('Patches processed for user {}  successfully ({})'.format(user,fi))
+        result.reset_index(drop=True).to_pickle('{}{}_patches_{}.pkl'.format(self.args.resultdir,user,basis))
+        self.rootLogger.info('Patches processed for user {} successfully ({})'.format(user,fi))
 
     # run patch summaries for all users
     def summarize_patches(self):

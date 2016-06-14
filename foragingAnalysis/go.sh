@@ -26,4 +26,7 @@ rootdir='/N/u/jlorince/BigRed2/MusicForaging/foragingAnalysis/MPA/'
 
 #### JUMP DISTRIBUTIONS
 
-python ${rootdir}patchAnalyses.py -f $1 --pickledir /N/dc2/scratch/jlorince/scrobbles_processed/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --resultdir /N/dc2/scratch/jlorince/jumpdists/ --jumpdists
+#python ${rootdir}patchAnalyses.py -f $1 --pickledir /N/dc2/scratch/jlorince/scrobbles_processed/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --resultdir /N/dc2/scratch/jlorince/jumpdists/ --jumpdists
+
+#### PATCH STATS
+python ${rootdir}setup.py -f $1 --suppdir /N/dc2/scratch/jlorince/support/ --pickledir /N/dc2/scratch/jlorince/scrobbles_processed/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --patch_basis patch_idx_shuffle --resultdir /N/dc2/scratch/jlorince/patches/
