@@ -321,7 +321,7 @@ class setup(object):
             df.to_pickle('{}{}.pkl'.format(output_dir,user))
 
         if self.args.patch_len_dist:
-            vals_simple,vals_shuffle = self.patch_length_distributions(user,df,bins=np.arange(0,1001,1),method=self.args.patch_len_dist)
+            self.patch_length_distributions(user,df,bins=np.arange(0,1001,1),method=self.args.patch_len_dist)
             #return user,vals_simple,vals_shuffle
 
 
