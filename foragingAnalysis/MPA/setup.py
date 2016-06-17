@@ -391,7 +391,7 @@ class setup(object):
             vc_simple = df['patch_idx_simple'].value_counts().values
             counts_simple = np.clip(vc_simple,0,1000)
             vals_simple = np.histogram(counts_simple,bins=bins)[0]
-            listens_simple = nparray([i*c for i,c in enumerate(vals_simple)])
+            listens_simple = np.array([i*c for i,c in enumerate(vals_simple)])
             listens_simple[-1] = vc_simple[vc_simple>=1000].sum()
             listens_simple = listens_simple / n_listens
 
