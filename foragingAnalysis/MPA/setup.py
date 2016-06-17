@@ -75,12 +75,12 @@ class setup(object):
         if self.args.file:
             result = self.processor(fi=self.args.file,output_dir=self.args.pickledir,is_sorted=True,features=self.features,dist=self.args.distance_metric,session_threshold=self.args.session_thresh,dist_threshold=self.args.dist_thresh, min_patch_length=self.args.min_patch_length,artist_idx_feature_map=self.artist_idx_feature_map)
 
-            if self.args.patch_len_dist:
-                user,vals_simple,vals_shuffle = result
-                with open(self.args.resultdir+user,'a') as fout:
-                    if vals_simple is not None:
-                        fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.astype(str))+'\n')
-                    fout.write('\t'.join([user,'shuffle',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
+                # if self.args.patch_len_dist:
+                #     user,vals_simple,vals_shuffle = result
+                #     with open(self.args.resultdir+user,'a') as fout:
+                #         if vals_simple is not None:
+                #             fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.astype(str))+'\n')
+                #         fout.write('\t'.join([user,'shuffle',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
 
 
         else:
@@ -322,8 +322,7 @@ class setup(object):
 
         if self.args.patch_len_dist:
             vals_simple,vals_shuffle = self.patch_length_distributions(user,df,bins=np.arange(0,1001,1),method=self.args.patch_len_dist)
-            self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
-            return user,vals_simple,vals_shuffle
+            #return user,vals_simple,vals_shuffle
 
 
         self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
@@ -385,25 +384,41 @@ class setup(object):
             self.pool.close()
             self.rootLogger.info("Pool closed")
 
+
     def patch_length_distributions(self,user,df,bins,method):
-        if method in ('both','simple'):
-            counts_simple = np.clip(df['patch_idx_simple'].value_counts().values,0,1000)
+        n_listens = float(len(df))
+        if self.args.min_patch_length==2:
+            vc_simple = df['patch_idx_simple'].value_counts().values
+            counts_simple = np.clip(vc,0,1000)
             vals_simple = np.histogram(counts_simple,bins=bins)[0]
-        else:
-            vals_simple = None
-        if method in ('both','shuffle'):
-            counts_shuffle = np.clip(df['patch_idx_shuffle'].value_counts().values,0,1000)
-            vals_shuffle = np.histogram(counts_shuffle,bins=bins)[0]
-        else:
-            vals_shuffle = None
+            listens_simple = [i*c for i,c in enumerate(vals_simple)]
+            listens_simple[-1] = vc_simple[vc_simple>=1000].sum()
+            listens_simple = listens_simple / n_listens
 
-        if self.args.patch_len_dist:
+            vc_block = df['block'].value_counts().values
+            counts_block = np.clip(vc,0,1000)
+            vals_block = np.histogram(counts_block,bins=bins)[0]
+            listens_block = [i*c for i,c in enumerate(vals_block)]
+            listens_block[-1] = vc_block[vc_block>=1000].sum()
+            listens_block = listens_block / n_listens
+
             with open(self.args.resultdir+user,'a') as fout:
-                if vals_simple is not None:
-                    fout.write('\t'.join([user,'simple',str(self.args.dist_thresh)])+'\t'+','.join(vals_simple.astype(str))+'\n')
-                fout.write('\t'.join([user,'shuffle',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
+                fout.write('\t'.join([user,'block','patches',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_block.astype(str))+'\n')
+                fout.write('\t'.join([user,'block','listens',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(listens_block.astype(str))+'\n')
+                fout.write('\t'.join([user,'simple','patches',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_simple.astype(str))+'\n')
+                fout.write('\t'.join([user,'simple','listens',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(listens_simple.astype(str))+'\n')
 
-        return vals_simple,vals_shuffle
+        vc_shuffle = df['patch_idx_shuffle'].value_counts().values
+        counts_shuffle = np.clip(vc,0,1000)
+        vals_shuffle = np.histogram(counts_shuffle,bins=bins)[0]
+        listens_shuffle = [i*c for i,c in enumerate(vals_shuffle)]
+        listens_shuffle[-1] = vc_shuffle[vc_shuffle>=1000].sum()
+        listens_shuffle = listens_shuffle / n_listens
+
+
+        with open(self.args.resultdir+user,'a') as fout:
+            fout.write('\t'.join([user,'shuffle','patches',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
+            fout.write('\t'.join([user,'shuffle','listens',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(listens_shuffle.astype(str))+'\n')
 
 
 
@@ -433,7 +448,8 @@ if __name__ == '__main__':
     parser.add_argument("--skip_complete", help="If specified, check for existing files and skip if they exist",action='store_true')
     parser.add_argument("--prefix_input", help="inpout file prefix",type=str,default='')
     parser.add_argument("--prefix_output", help="output file prefix",type=str,default='')
-    parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",default=None,type=str,choices=['shuffle','simple','both'])
+    #parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",default=None,type=str,choices=['shuffle','simple','block','both'])
+    parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",action='store_true')
 
 
     args = parser.parse_args()
