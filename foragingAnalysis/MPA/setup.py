@@ -391,14 +391,14 @@ class setup(object):
             vc_simple = df['patch_idx_simple'].value_counts().values
             counts_simple = np.clip(vc_simple,0,1000)
             vals_simple = np.histogram(counts_simple,bins=bins)[0]
-            listens_simple = [i*c for i,c in enumerate(vals_simple)]
+            listens_simple = nparray([i*c for i,c in enumerate(vals_simple)])
             listens_simple[-1] = vc_simple[vc_simple>=1000].sum()
             listens_simple = listens_simple / n_listens
 
             vc_block = df['block'].value_counts().values
             counts_block = np.clip(vc_block,0,1000)
             vals_block = np.histogram(counts_block,bins=bins)[0]
-            listens_block = [i*c for i,c in enumerate(vals_block)]
+            listens_block = np.array([i*c for i,c in enumerate(vals_block)])
             listens_block[-1] = vc_block[vc_block>=1000].sum()
             listens_block = listens_block / n_listens
 
@@ -411,7 +411,7 @@ class setup(object):
         vc_shuffle = df['patch_idx_shuffle'].value_counts().values
         counts_shuffle = np.clip(vc_shuffle,0,1000)
         vals_shuffle = np.histogram(counts_shuffle,bins=bins)[0]
-        listens_shuffle = [i*c for i,c in enumerate(vals_shuffle)]
+        listens_shuffle = np.array([i*c for i,c in enumerate(vals_shuffle)])
         listens_shuffle[-1] = vc_shuffle[vc_shuffle>=1000].sum()
         listens_shuffle = listens_shuffle / n_listens
 
