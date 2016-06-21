@@ -52,7 +52,9 @@ class analyze(setup.setup):
                 self.rootLogger.info("Pool closed")
 
         if self.args.blockdists:
-            self.rootLogger.info("Starting block distance analysis")
+            #self.rootLogger.info("Starting block distance analysis")
+            self.mean_block_distances(self.args.file)
+
 
         if self.args.diversity_dists:
             bins = np.arange(0,1.01,.01)
@@ -91,15 +93,22 @@ class analyze(setup.setup):
         return zeros,nozeros
 
     def mean_block_distances(self,fi,n=100):
-        user = fi.split('/')[-1][:-4]
+        if 'patches' not in fi:
+            raise('WRONG DATATYPE')
+
+        user = fi.split('/')[-1].split('_')[0]
         df = pd.read_pickle(fi)
-        if 'block' not in df.columns:
-            df['block'] = (df['artist_idx'].shift(1) != df['artist_idx']).astype(int).cumsum()
-        result = []
-        blocks = df[['artist_idx','block']].groupby('block').first()
+
+        new_result = []
+
+        blocks = result[result['n']>=5].dropna()
         for i in xrange(len(blocks)-n):
-            first = blocks['artist_id'].iloc[i]
-            result.append(np.array(blocks['artist_id'][i+1:i+n+1].apply(lambda val: calc_sim(val,first))))
+            first = block['centroid'].iloc[i]
+            new_result.append(np.array(block['centroid'][i+1:i+n+1].apply(lambda val: cosine(val,first))))
+
+        with open(self.args.resultdir+user,'a') as fout:
+            fout.write('\t'.join([user,'patch',','.join(result.astype(str))])+'\n')
+
 
 
 

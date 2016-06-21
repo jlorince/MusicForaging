@@ -14,7 +14,7 @@ from scipy import sparse
 
 
 
-#### cat $(wc -l * | grep '\s90' | gawk '{print $2}') | gawk -F $'\t' '{if ($2 == "simple") {print $1 FS $2 FS $3 FS 1 FS $4} else {print $0}}' > patch_len_dists_concat
+#### cat $(wc -l * | grep '198\s' | gawk '{print $2}')  > patch_len_dists_concat
 
 
 class setup(object):
@@ -60,6 +60,10 @@ class setup(object):
             #self.rootLogger.info("Starting patch summaries")
             self.summarize_patches()
             #self.rootLogger.info("Patch summaries complete")
+
+        if self.args.blockdists:
+            #self.rootLogger.info("Starting block distance analysis")
+            self.mean_block_distances(self.args.file)
 
 
 
@@ -420,8 +424,63 @@ class setup(object):
             fout.write('\t'.join([user,'shuffle','patches',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
             fout.write('\t'.join([user,'shuffle','listens',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(listens_shuffle.astype(str))+'\n')
 
+    def mean_block_distances(self,fi,n=100):
 
+        def hash_handler(a,frst):
+            if frst>a:
+                frst,a = a,frst
+            if frst not in dhash:
+                dhash[frst] = {}
+                result = self.calc_dist(frst,a)
+                dhash[frst][a] = result
+            else:
+                result = dhash[frst].get(a)
+                if result is None:
+                    result = self.calc_dist(frst,a)
+                    dhash[frst][a] = result
+            return result
 
+        def cos_nan(arr1,arr2):
+            if np.any(np.isnan(arr1)) or np.any(np.isnan(arr2)):
+                return np.nan
+            else:
+                return cosine(arr1,arr2)
+
+        user = fi.split('/')[-1][:-4]
+        df = pd.read_pickle(fi)
+
+        result = []
+        dhash = {}
+        for i in xrange(len(df)-n):
+            first = df['artist_idx'].iloc[i]
+            result.append(np.array(df['artist_idx'][i+1:i+n+1].apply(lambda val: hash_handler(val,first))))
+        result = np.nanmean(np.vstack(result),0)
+        with open(self.args.resultdir+user,'a') as fout:
+            fout.write('\t'.join([user,'scrobble',','.join(result.astype(str))])+'\n')
+
+        result = []
+        blocks = df[['artist_idx','block']].groupby('block').first()
+        for i in xrange(len(blocks)-n):
+            first = blocks['artist_idx'].iloc[i]
+            result.append(np.array(blocks['artist_idx'][i+1:i+101].apply(lambda val: hash_handler(val,first))))
+        result = np.nanmean(np.vstack(result),0)
+        with open(self.args.resultdir+user,'a') as fout:
+            fout.write('\t'.join([user,'block',','.join(result.astype(str))])+'\n')
+
+        df['features'] = df['artist_idx'].apply(lambda idx: self.get_features(idx))
+        df = df[['ts','features']].set_index('ts').
+
+        for res,n in (('D',n),('W',52),('M',12)):
+            result = []
+            blocks = df.resample(method).apply(lambda ser: np.nanmean(np.vstack(ser.values),axis=0) if len(ser)>0 else np.repeat(np.nan,self.n_features))
+            first = random_blocks['features'].iloc[i]
+            new_result.append(np.array(blocks['features'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
+            for i in xrange(len(blocks)-n):
+                first = blocks.iloc[i]
+                result.append(np.array(blocks[i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
+            result = np.nanmean(np.vstack(result),0)
+            with open(self.args.resultdir+user,'a') as fout:
+                    fout.write('\t'.join([user,res,','.join(result.astype(str))])+'\n')
 
 
 
@@ -450,6 +509,7 @@ if __name__ == '__main__':
     parser.add_argument("--prefix_output", help="output file prefix",type=str,default='')
     #parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",default=None,type=str,choices=['shuffle','simple','block','both'])
     parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",action='store_true')
+    parser.add_argument("--blockdists", help="",action='store_true')
 
 
     args = parser.parse_args()
@@ -463,11 +523,10 @@ if __name__ == '__main__':
 
 
 
-#### 1: Just generate distances for a given feature space
 
-#python setup.py -r -p --datadir /Users/jaredlorince/git/MusicForaging/testData/scrobbles/ --suppdir /Users/jaredlorince/git/MusicForaging/GenreModeling/data/ --pickledir /Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/ -n 4 --feature_path /Users/jaredlorince/git/MusicForaging/GenreModeling/data/features/lda_artists/features_190.npy
+#python setup.py -r -p -s -f /Users/jaredlorince/git/MusicForaging/testData/scrobbles/10000933.txt --suppdir /Users/jaredlorince/git/MusicForaging/GenreModeling/data/ --pickledir /Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/ --feature_path /Users/jaredlorince/git/MusicForaging/GenreModeling/data/features/lda_artists/features_190.npy --session_thresho 0 --min_patch_length 5 --dist_thresh 0.2
 
-#python setup.py -p --suppdir /Users/jaredlorince/git/MusicForaging/GenreModeling/data/ --pickledir /Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/ -n 4 --feature_path /Users/jaredlorince/git/MusicForaging/GenreModeling/data/features/lda_artists/features_190.npy --session_thresh 1800 --dist_thresh 0.2 --min_patch_length 5
+#python setup.py -f /Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/10000933.pkl --suppdir /Users/jaredlorince/git/MusicForaging/GenreModeling/data/ --feature_path /Users/jaredlorince/git/MusicForaging/GenreModeling/data/features/lda_artists/features_190.npy --blockdists --resultdir /Users/jaredlorince/git/MusicForaging/testData/
 
 #python setup.py --patch_basis patch_idx_shuffle --suppdir /Users/jaredlorince/git/MusicForaging/GenreModeling/data/ --pickledir /Users/jaredlorince/git/MusicForaging/testData/scrobbles_test/ -n 4 --feature_path /Users/jaredlorince/git/MusicForaging/GenreModeling/data/features/lda_artists/features_190.npy
 
