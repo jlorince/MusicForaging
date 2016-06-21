@@ -449,30 +449,30 @@ class setup(object):
         user = fi.split('/')[-1][:-4]
         df = pd.read_pickle(fi)
 
-        result = []
-        dhash = {}
-        for i in xrange(len(df)-n):
-            first = df['artist_idx'].iloc[i]
-            result.append(np.array(df['artist_idx'][i+1:i+n+1].apply(lambda val: hash_handler(val,first))))
-        result = np.nanmean(np.vstack(result),0)
-        with open(self.args.resultdir+user,'a') as fout:
-            fout.write('\t'.join([user,'scrobble',','.join(result.astype(str))])+'\n')
+        # result = []
+        # dhash = {}
+        # for i in xrange(len(df)-n):
+        #     first = df['artist_idx'].iloc[i]
+        #     result.append(np.array(df['artist_idx'][i+1:i+n+1].apply(lambda val: hash_handler(val,first))))
+        # result = np.nanmean(np.vstack(result),0)
+        # with open(self.args.resultdir+user,'a') as fout:
+        #     fout.write('\t'.join([user,'scrobble',','.join(result.astype(str))])+'\n')
 
-        result = []
-        blocks = df[['artist_idx','block']].groupby('block').first()
-        for i in xrange(len(blocks)-n):
-            first = blocks['artist_idx'].iloc[i]
-            result.append(np.array(blocks['artist_idx'][i+1:i+101].apply(lambda val: hash_handler(val,first))))
-        result = np.nanmean(np.vstack(result),0)
-        with open(self.args.resultdir+user,'a') as fout:
-            fout.write('\t'.join([user,'block',','.join(result.astype(str))])+'\n')
+        # result = []
+        # blocks = df[['artist_idx','block']].groupby('block').first()
+        # for i in xrange(len(blocks)-n):
+        #     first = blocks['artist_idx'].iloc[i]
+        #     result.append(np.array(blocks['artist_idx'][i+1:i+101].apply(lambda val: hash_handler(val,first))))
+        # result = np.nanmean(np.vstack(result),0)
+        # with open(self.args.resultdir+user,'a') as fout:
+        #     fout.write('\t'.join([user,'block',','.join(result.astype(str))])+'\n')
 
         df['features'] = df['artist_idx'].apply(lambda idx: self.get_features(idx))
         df = df[['ts','features']].set_index('ts')
 
         for res,n in (('D',n),('W',52),('M',12)):
             result = []
-            blocks = df.resample(res).apply(lambda ser: np.nanmean(np.vstack(ser.values),axis=0) if len(ser)>0 else np.repeat(np.nan,self.n_features))
+            blocks = df.resample(res).aggregate(lambda ser: np.nanmean(np.vstack(ser.values),axis=0) if len(ser)>0 else np.repeat(np.nan,self.n_features))
             first = random_blocks['features'].iloc[i]
             new_result.append(np.array(blocks['features'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
             for i in xrange(len(blocks)-n):
