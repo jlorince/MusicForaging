@@ -472,7 +472,7 @@ class setup(object):
 
         for res,n in (('D',n),('W',52),('M',12)):
             result = []
-            blocks = df.resample(method).apply(lambda ser: np.nanmean(np.vstack(ser.values),axis=0) if len(ser)>0 else np.repeat(np.nan,self.n_features))
+            blocks = df.resample(res).apply(lambda ser: np.nanmean(np.vstack(ser.values),axis=0) if len(ser)>0 else np.repeat(np.nan,self.n_features))
             first = random_blocks['features'].iloc[i]
             new_result.append(np.array(blocks['features'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
             for i in xrange(len(blocks)-n):
@@ -481,6 +481,8 @@ class setup(object):
             result = np.nanmean(np.vstack(result),0)
             with open(self.args.resultdir+user,'a') as fout:
                     fout.write('\t'.join([user,res,','.join(result.astype(str))])+'\n')
+
+        self.rootLogger.info('Block distances for user {} processed successfully ({})'.format(user,fi))
 
 
 
