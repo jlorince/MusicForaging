@@ -468,7 +468,7 @@ class setup(object):
         #     fout.write('\t'.join([user,'block',','.join(result.astype(str))])+'\n')
 
         df['features'] = df['artist_idx'].apply(lambda idx: self.get_features(idx))
-        df = df[['ts','features']].set_index('ts')
+        df = df.set_index('ts')['features']
 
         for res,n in (('D',n),('W',52),('M',12)):
             result = []
