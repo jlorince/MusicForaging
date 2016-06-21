@@ -473,7 +473,7 @@ class setup(object):
         for res,n in (('D',n),('W',52),('M',12)):
             result = []
             blocks = df.resample(res).aggregate(lambda ser: np.nanmean(np.vstack(ser.values),axis=0) if len(ser)>0 else np.repeat(np.nan,self.n_features))
-            first = random_blocks['features'].iloc[i]
+            first = blocks['features'].iloc[i]
             new_result.append(np.array(blocks['features'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
             for i in xrange(len(blocks)-n):
                 first = blocks.iloc[i]
