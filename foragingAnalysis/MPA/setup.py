@@ -424,7 +424,7 @@ class setup(object):
             fout.write('\t'.join([user,'shuffle','patches',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
             fout.write('\t'.join([user,'shuffle','listens',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(listens_shuffle.astype(str))+'\n')
 
-    def mean_block_distances(self,fi,n=100):
+    def mean_block_distances(self,fi,n=100,shuffle=True):
 
         def hash_handler(a,frst):
             if frst>a:
@@ -451,8 +451,13 @@ class setup(object):
 
         result = []
         dhash = {}
-        for i in xrange(len(df)-n):
-            first = df['artist_idx'].iloc[i]
+        if shuffle:
+            blocks = df.copy()
+            idx = np.array(blocks.index)
+            np.random.shuffle(idx)
+            blocks = blocks.reindex(idx)
+        for i in xrange(len(blocks)-n):
+            first = blocks['artist_idx'].iloc[i]
             result.append(np.array(df['artist_idx'][i+1:i+n+1].apply(lambda val: hash_handler(val,first))))
         result = np.nanmean(np.vstack(result),0)
         with open(self.args.resultdir+user,'a') as fout:
@@ -460,6 +465,10 @@ class setup(object):
 
         result = []
         blocks = df[['artist_idx','block']].groupby('block').first()
+        if shuffle:
+            idx = np.array(blocks.index)
+            np.random.shuffle(idx)
+            blocks = blocks.reindex(idx)
         for i in xrange(len(blocks)-n):
             first = blocks['artist_idx'].iloc[i]
             result.append(np.array(blocks['artist_idx'][i+1:i+101].apply(lambda val: hash_handler(val,first))))
@@ -473,6 +482,10 @@ class setup(object):
         for res,n in (('D',n),('W',52),('M',12)):
             result = []
             blocks = df.resample(res).aggregate(lambda ser: np.nanmean(np.vstack(ser.values),axis=0) if len(ser)>0 else np.repeat(np.nan,self.n_features))
+            if shuffle:
+                idx = np.array(blocks.index)
+                np.random.shuffle(idx)
+                blocks = blocks.reindex(idx)
             for i in xrange(len(blocks)-n):
                 first = blocks.iloc[i]
                 result.append(np.array(blocks[i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
