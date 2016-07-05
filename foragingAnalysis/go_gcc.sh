@@ -1,6 +1,6 @@
 #Wrapper sript for running analysis on BigRed2
 
-rootdir='/N/u/jlorince/BigRed2/MusicForaging/foragingAnalysis/MPA/'
+rootdir='/home/jlorince/MusicForaging/foragingAnalysis/MPA/'
 
 
 ####
