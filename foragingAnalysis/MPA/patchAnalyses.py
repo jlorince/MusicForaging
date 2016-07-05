@@ -119,7 +119,7 @@ if __name__ == '__main__':
     parser.add_argument("--pickledir", help="specify output dir for pickled dataframes",default='/home/jlorince/scrobbles_processed/')
     parser.add_argument("-n", help="number of processes in processor pool",type=int,default=1)
     parser.add_argument("--feature_path", help="path to artist feature matrix",default=None) # '/home/jlorince/lda_tests_artists/features_190.npy'
-    parser.add_argument("-f", "--file",help="If provided, run setup for this file only",default=None,type=str)
+    parser.add_argument("-f", "--file",help="If provided, run analysis for this file only",default=None,type=str)
 
     ### These are all the analyses we can run:
     parser.add_argument("--jumpdists", help="generate each user's distribution of artist-artist distances",action='store_true')
