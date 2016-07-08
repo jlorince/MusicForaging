@@ -60,8 +60,8 @@ class analyze(setup.setup):
             bins = np.arange(0,1.01,.01)
             zeros,nozeros = self.diversity_distributions(self.args.file,bins=bins)
             with open(self.args.resultdir+user,'w') as fout:
-                fout.write(','.join(zeros.astype(str))+'\n')
-                fout.write(','.join(nozeros.astype(str))+'\n')
+                fout.write(user+'\t'+'zeros'+'\t'+','.join(zeros.astype(str))+'\n')
+                fout.write(user+'\t'+'nozeros'+'\t'+','.join(nozeros.astype(str))+'\n')
 
 
 
