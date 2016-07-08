@@ -93,21 +93,41 @@ class analyze(setup.setup):
         return zeros,nozeros
 
     def mean_block_distances(self,fi,n=100):
+
+        def cos_nan(arr1,arr2):
+            if np.any(np.isnan(arr1)) or np.any(np.isnan(arr2)):
+                return np.nan
+            else:
+                return cosine(arr1,arr2)
+
         if 'patches' not in fi:
             raise('WRONG DATATYPE')
 
         user = fi.split('/')[-1].split('_')[0]
         df = pd.read_pickle(fi)
-
-        new_result = []
-
         blocks = result[result['n']>=5].dropna()
+
+        result = []
         for i in xrange(len(blocks)-n):
             first = block['centroid'].iloc[i]
-            new_result.append(np.array(block['centroid'][i+1:i+n+1].apply(lambda val: cosine(val,first))))
+            result.append(np.array(blocks['centroid'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
+        result = np.nanmean(np.vstack(result),0)
 
-        with open(self.args.resultdir+user,'a') as fout:
+
+        # now shuffled
+        idx = np.array(blocks.index)
+        np.random.shuffle(idx)
+        blocks = blocks.reindex(idx)
+
+        result_random = []
+        for i in xrange(len(blocks)-n):
+            first = block['centroid'].iloc[i]
+            result_random.append(np.array(blocks['centroid'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
+        result = np.nanmean(np.vstack(result_random),0)
+
+        with open(self.args.resultdir+user,'w') as fout:
             fout.write('\t'.join([user,'patch',','.join(result.astype(str))])+'\n')
+            fout.write('\t'.join([user,'patch_random',','.join(result_random.astype(str))])+'\n')
 
 
 

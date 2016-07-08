@@ -424,7 +424,7 @@ class setup(object):
             fout.write('\t'.join([user,'shuffle','patches',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(vals_shuffle.astype(str))+'\n')
             fout.write('\t'.join([user,'shuffle','listens',str(self.args.dist_thresh),str(self.args.min_patch_length)])+'\t'+','.join(listens_shuffle.astype(str))+'\n')
 
-    def mean_block_distances(self,fi,n=100,shuffle=True):
+    def mean_block_distances(self,fi,n=100,shuffle=False):
 
         def hash_handler(a,frst):
             if frst>a:
@@ -514,7 +514,7 @@ if __name__ == '__main__':
     parser.add_argument("--min_patch_length", help="minimum patch length",type=int,default=None) # 5
     parser.add_argument("--dist_thresh", help="distance threshold defining patch neigborhood",type=float,default=None) # 0.2
     parser.add_argument("-n", help="number of processes in processor pool",type=int,default=1)
-    parser.add_argument("--feature_path", help="path to artist feature matrix",default=None) # '/home/jlorince/lda_tests_artists/features_190.npy'
+    parser.add_argument("--feature_path", help="path to artist feature matrix",default=None) # '/home/jlorince/lda_tests_artists/features_190.numpy'
     parser.add_argument("--distance_metric", help="distance metric",type=str,default='cosine')
     parser.add_argument("--patch_basis", help="If specified, perform patch summaries with the given basis",type=str,choices=['block','patch_idx_shuffle','patch_index_simple'])
     parser.add_argument("--skip_complete", help="If specified, check for existing files and skip if they exist",action='store_true')
