@@ -83,8 +83,8 @@ class analyze(setup.setup):
             raise('WRONG DATATYPE')
         user = fi.split('/')[-1].split('_')[0]
         df = pd.read_pickle(fi)
-        zeros = np.histogram(df[df['n']>=5]['diversity'],bins=bins)
-        nozeros = np.histogram(df[(df['n']>=5)&(df['diversity']>0)]['diversity'],bins=bins)
+        zeros = np.histogram(df[df['n']>=5]['diversity'],bins=bins)[0]
+        nozeros = np.histogram(df[(df['n']>=5)&(df['diversity']>0)]['diversity'],bins=bins)[0]
 
         with open(self.args.resultdir+user,'w') as fout:
             fout.write(user+'\t'+'zeros'+'\t'+','.join(zeros.astype(str))+'\n')
