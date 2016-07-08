@@ -105,7 +105,7 @@ class analyze(setup.setup):
 
         user = fi.split('/')[-1].split('_')[0]
         df = pd.read_pickle(fi)
-        blocks = result[result['n']>=5].dropna()
+        blocks = df[df['n']>=5].dropna()
 
         result = []
         for i in xrange(len(blocks)-n):
