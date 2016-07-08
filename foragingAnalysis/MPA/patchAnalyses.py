@@ -86,7 +86,7 @@ class analyze(setup.setup):
         zeros = np.histogram(df[df['n']>=5]['diversity'],bins=bins)[0]
         nozeros = np.histogram(df[(df['n']>=5)&(df['diversity']>0)]['diversity'],bins=bins)[0]
 
-        zeros = zeros/float(zero.sum())
+        zeros = zeros/float(zeros.sum())
         nozeros = nozeros/float(nozeros.sum())
 
         with open(self.args.resultdir+user,'w') as fout:
