@@ -87,8 +87,8 @@ class analyze(setup.setup):
             raise('WRONG DATATYPE')
         user = fi.split('/')[-1].split('_')[0]
         df = pd.read_pickle(fi)
-        zeros = np.histogram(df[df['n']>=10]['diversity'],bins=bins)
-        nozeros = np.histogram(df[(df['n']>=10)&(df['diversity']>0)]['diversity'],bins=bins)
+        zeros = np.histogram(df[df['n']>=5]['diversity'],bins=bins)
+        nozeros = np.histogram(df[(df['n']>=5)&(df['diversity']>0)]['diversity'],bins=bins)
         self.rootLogger.info('diversity distributions done for user {} ({})'.format(user,fi))
         return zeros,nozeros
 
