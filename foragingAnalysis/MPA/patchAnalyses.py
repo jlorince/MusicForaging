@@ -58,11 +58,7 @@ class analyze(setup.setup):
 
         if self.args.diversity_dists:
             bins = np.arange(0,1.01,.01)
-            zeros,nozeros = self.diversity_distributions(self.args.file,bins=bins)
-            with open(self.args.resultdir+user,'w') as fout:
-                fout.write(user+'\t'+'zeros'+'\t'+','.join(zeros.astype(str))+'\n')
-                fout.write(user+'\t'+'nozeros'+'\t'+','.join(nozeros.astype(str))+'\n')
-
+            self.diversity_distributions(self.args.file,bins=bins)
 
 
     # calculate distribution (using histogram with specified bins)
@@ -89,8 +85,12 @@ class analyze(setup.setup):
         df = pd.read_pickle(fi)
         zeros = np.histogram(df[df['n']>=5]['diversity'],bins=bins)
         nozeros = np.histogram(df[(df['n']>=5)&(df['diversity']>0)]['diversity'],bins=bins)
+
+        with open(self.args.resultdir+user,'w') as fout:
+            fout.write(user+'\t'+'zeros'+'\t'+','.join(zeros.astype(str))+'\n')
+            fout.write(user+'\t'+'nozeros'+'\t'+','.join(nozeros.astype(str))+'\n')
         self.rootLogger.info('diversity distributions done for user {} ({})'.format(user,fi))
-        return zeros,nozeros
+
 
     def mean_block_distances(self,fi,n=100):
 
