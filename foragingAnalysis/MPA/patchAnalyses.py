@@ -109,7 +109,7 @@ class analyze(setup.setup):
 
         result = []
         for i in xrange(len(blocks)-n):
-            first = block['centroid'].iloc[i]
+            first = blocks['centroid'].iloc[i]
             result.append(np.array(blocks['centroid'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
         result = np.nanmean(np.vstack(result),0)
 
@@ -121,7 +121,7 @@ class analyze(setup.setup):
 
         result_random = []
         for i in xrange(len(blocks)-n):
-            first = block['centroid'].iloc[i]
+            first = blocks['centroid'].iloc[i]
             result_random.append(np.array(blocks['centroid'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
         result = np.nanmean(np.vstack(result_random),0)
 
