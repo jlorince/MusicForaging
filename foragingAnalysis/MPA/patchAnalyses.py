@@ -128,6 +128,7 @@ class analyze(setup.setup):
         with open(self.args.resultdir+user,'w') as fout:
             fout.write('\t'.join([user,'patch',','.join(result.astype(str))])+'\n')
             fout.write('\t'.join([user,'patch_random',','.join(result_random.astype(str))])+'\n')
+        self.rootLogger.info('Block distances for user {} processed successfully ({})'.format(user,fi))
 
 
 
