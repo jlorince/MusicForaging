@@ -20,7 +20,7 @@ for fi in files:
                 filename = line.strip().split()[-1]
                 done.add(filename[filename.rfind('/'):-1])
 
-with open(jobfile) as fin, open(jobile+'.partial','w') as fout:
+with open(jobfile) as fin, open(jobfile+'.partial','w') as fout:
     for line in fin:
         line = line.strip()
         if line[line.rfind('/'):] in done:
