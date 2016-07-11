@@ -511,7 +511,7 @@ class setup(object):
             vals = np.histogram(td,bins=bins)[0]
             result.append(vals/float(vals.sum()))
         result = np.nanmean(np.vstack(result),0)
-        with open(self.args.resultdir+user,'a') as fout:
+        with open(self.args.resultdir+user,'w') as fout:
             fout.write('\t'.join([user,','.join(result.astype(str))])+'\n')
         self.rootLogger.info('Gap times for user {} processed successfully ({})'.format(user,fi))
 
