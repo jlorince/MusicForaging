@@ -500,6 +500,7 @@ class setup(object):
         self.rootLogger.info('Block distances for user {} processed successfully ({})'.format(user,fi))
 
     def blockgaps(self,fi):
+        user = self.userFromFile(fi)
         result = []
         df = pd.read_pickle(fi)[['ts','artist_idx','block']].groupby('block').first()
         bins = np.arange(0,31,1)
