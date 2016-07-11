@@ -513,7 +513,7 @@ class setup(object):
         result = np.nanmean(np.vstack(result),0)
         with open(self.args.resultdir+user,'a') as fout:
             fout.write('\t'.join([user,','.join(result.astype(str))])+'\n')
-
+        self.rootLogger.info('Gap times for user {} processed successfully ({})'.format(user,fi))
 
 
 
