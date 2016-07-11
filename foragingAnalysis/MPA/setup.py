@@ -514,18 +514,6 @@ class setup(object):
             fout.write('\t'.join([user,res,','.join(result.astype(str))])+'\n')
 
 
-    #df = pd.read_pickle(fi)[['ts','artist_idx','block']]
-
-    result = []
-    for artist in df['artist_idx'].dropna().unique():
-        current = df[df['artist_idx']==artist]['ts']
-        td = ((current-current.shift(1)).dropna())/day
-        vals = np.histogram(td,bins=bins)[0]
-        #vals = vals/float(vals.sum())
-        result.append(vals)
-    result_all.append(np.nanmean(np.vstack(result),axis=0))
-
-
 
 
 if __name__ == '__main__':
