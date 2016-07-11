@@ -509,7 +509,7 @@ class setup(object):
             current = df[df['artist_idx']==artist]['ts']
             td = ((current-current.shift(1)).dropna())/day
             vals = np.histogram(td,bins=bins)[0]
-            result.append(vals)
+            result.append(vals/float(vals.sum()))
         result = np.nanmean(np.vstack(result),0)
         with open(self.args.resultdir+user,'a') as fout:
             fout.write('\t'.join([user,','.join(result.astype(str))])+'\n')
