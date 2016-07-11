@@ -65,6 +65,10 @@ class setup(object):
             #self.rootLogger.info("Starting block distance analysis")
             self.mean_block_distances(self.args.file)
 
+        if self.args.blockgaps:
+            #self.rootLogger.info("Starting block distance analysis")
+            self.blockgaps(self.args.file)
+
 
 
 
@@ -495,6 +499,33 @@ class setup(object):
 
         self.rootLogger.info('Block distances for user {} processed successfully ({})'.format(user,fi))
 
+    def blockgaps(self,fi):
+        result = []
+        df = pd.read_pickle(fi)[['ts','artist_idx','block']].groupby('block').first()
+        bins = np.arange(0,31,1)
+        day = np.timedelta64(1, 'D')
+        for artist in df['artist_idx'].dropna().unique():
+            current = df[df['artist_idx']==artist]['ts']
+            td = ((current-current.shift(1)).dropna())/day
+            vals = np.histogram(td,bins=bins)[0]
+            result.append(vals)
+        result = np.nanmean(np.vstack(result),0)
+        with open(self.args.resultdir+user,'a') as fout:
+            fout.write('\t'.join([user,res,','.join(result.astype(str))])+'\n')
+
+
+    #df = pd.read_pickle(fi)[['ts','artist_idx','block']]
+
+    result = []
+    for artist in df['artist_idx'].dropna().unique():
+        current = df[df['artist_idx']==artist]['ts']
+        td = ((current-current.shift(1)).dropna())/day
+        vals = np.histogram(td,bins=bins)[0]
+        #vals = vals/float(vals.sum())
+        result.append(vals)
+    result_all.append(np.nanmean(np.vstack(result),axis=0))
+
+
 
 
 if __name__ == '__main__':
@@ -523,6 +554,7 @@ if __name__ == '__main__':
     #parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",default=None,type=str,choices=['shuffle','simple','block','both'])
     parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",action='store_true')
     parser.add_argument("--blockdists", help="",action='store_true')
+    parser.add_argument("--blockgaps", help="",action='store_true')
 
 
     args = parser.parse_args()
