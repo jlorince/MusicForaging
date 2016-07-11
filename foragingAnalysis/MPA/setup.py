@@ -512,7 +512,7 @@ class setup(object):
             result.append(vals)
         result = np.nanmean(np.vstack(result),0)
         with open(self.args.resultdir+user,'a') as fout:
-            fout.write('\t'.join([user,res,','.join(result.astype(str))])+'\n')
+            fout.write('\t'.join([user,','.join(result.astype(str))])+'\n')
 
 
 
