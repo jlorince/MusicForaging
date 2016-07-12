@@ -16,7 +16,7 @@ seq_length = 20000
 n = 10000
 
 jumpdist_path = '/home/jlorince/jumpdists_all'
-feature_path =  'lda_tests_artists/features_190.npy' # '../GenreModeling/data/features/lda_artists/features_190.npy' #
+feature_path =  '/home/jlorince/lda_tests_artists/features_190.npy' # '../GenreModeling/data/features/lda_artists/features_190.npy' #
 artist_pop_path = '/home/jlorince/artist_pop'
 td_dist_path = '/home/jlorince/scrobble_td.npy'
 
