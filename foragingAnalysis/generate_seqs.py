@@ -9,7 +9,7 @@ from pathos.multiprocessing import ProcessingPool as Pool
 from pathos.multiprocessing import cpu_count
 
 # number of artists
-n_artists = 10000
+n_artists = 50000
 # sequence length
 seq_length = 20000
 # number of artifical sequences
