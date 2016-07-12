@@ -24,7 +24,6 @@ td_dist_path = '/home/jlorince/scrobble_td.npy'
 # setup logging
 
 logging.basicConfig(format='%(asctime)s %(message)s',level=logging.INFO)
-logging.warning('is when this event was logged.')
 
 # load feature data and generate distance matrix
 features = np.load(feature_path)[:n_artists]
