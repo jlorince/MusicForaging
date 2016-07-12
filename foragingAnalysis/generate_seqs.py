@@ -15,10 +15,10 @@ seq_length = 20000
 # number of artifical sequences
 n = 10000
 
-jumpdist_path = '../testData/jumpdists_all'
-feature_path = '../GenreModeling/data/features/lda_artists/features_190.npy' # 'lda_tests_artists/features_190.npy'
-artist_pop_path = '../GenreModeling/data/artist_pop'
-td_dist_path = '../testData/scrobble_td.npy'
+jumpdist_path = '/home/jlorince/jumpdists_all'
+feature_path =  'lda_tests_artists/features_190.npy' # '../GenreModeling/data/features/lda_artists/features_190.npy' #
+artist_pop_path = '/home/jlorince/artist_pop'
+td_dist_path = '/home/jlorince/scrobble_td.npy'
 
 # load feature data and generate distance matrix
 features = np.load(feature_path)[:n_artists]
