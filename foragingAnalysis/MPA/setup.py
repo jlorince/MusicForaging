@@ -519,7 +519,7 @@ class setup(object):
             fout.write('\t'.join([user,','.join(result.astype(str))])+'\n')
         self.rootLogger.info('Gap times for user {} processed successfully ({})'.format(user,fi))
 
-    def scrobble_gaps(self,fi)
+    def scrobble_gaps(self,fi):
         user = self.userFromFile(fi)
         result = []
         df = pd.read_pickle(fi)['ts']
