@@ -464,6 +464,7 @@ class setup(object):
             idx = np.array(blocks.index)
             np.random.shuffle(idx)
             blocks = blocks.reindex(idx)
+        blocks = df.copy()
         for i in xrange(len(blocks)-n):
             first = blocks['artist_idx'].iloc[i]
             result.append(np.array(df['artist_idx'][i+1:i+n+1].apply(lambda val: hash_handler(val,first))))
