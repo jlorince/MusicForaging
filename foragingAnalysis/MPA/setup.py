@@ -69,6 +69,10 @@ class setup(object):
             #self.rootLogger.info("Starting block distance analysis")
             self.blockgaps(self.args.file)
 
+        if self.args.scrobblegaps:
+            #self.rootLogger.info("Starting block distance analysis")
+            self.scrobble_gaps(self.args.file)
+
 
 
 
@@ -515,6 +519,17 @@ class setup(object):
             fout.write('\t'.join([user,','.join(result.astype(str))])+'\n')
         self.rootLogger.info('Gap times for user {} processed successfully ({})'.format(user,fi))
 
+    def scrobble_gaps(self,fi)
+        user = self.userFromFile(fi)
+        result = []
+        df = pd.read_pickle(fi)['ts']
+        bins = np.arange(0,60 * 60 * 24 * 30,120)
+        td = (df-df.shift(1)).dropna().apply(lambda x: x.total_seconds())
+        vals = np.histogram(td,bins=bins)[0]
+        result = vals/float(vals.sum())
+        with open(self.args.resultdir+user,'w') as fout:
+            fout.write('\t'.join([user,','.join(result.astype(str))])+'\n')
+        self.rootLogger.info('Gap times for user {} processed successfully ({})'.format(user,fi))
 
 
 if __name__ == '__main__':
@@ -544,6 +559,8 @@ if __name__ == '__main__':
     parser.add_argument("--patch_len_dist", help="compute distribution of patch lengths",action='store_true')
     parser.add_argument("--blockdists", help="",action='store_true')
     parser.add_argument("--blockgaps", help="",action='store_true')
+    parser.add_argument("--scrobblegaps", help="",action='store_true')
+
 
 
     args = parser.parse_args()

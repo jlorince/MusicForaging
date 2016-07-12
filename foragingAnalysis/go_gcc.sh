@@ -4,7 +4,7 @@ rootdir='/home/jlorince/MusicForaging/foragingAnalysis/MPA/'
 
 
 ####
-# parallel --jobs 32 -a joblist_pkl.txt MusicForaging/foragingAnalysis/go_gcc.sh &> log
+# parallel --jobs 32 -a joblist_pkl.txt ./go_gcc.sh &> log
 
 
 #### Just generate distances under a given feature space
@@ -39,4 +39,4 @@ rootdir='/home/jlorince/MusicForaging/foragingAnalysis/MPA/'
 #### BLOCK DISTS
 #python ${rootdir}setup.py -f $1 --suppdir /N/dc2/scratch/jlorince/support/ --pickledir /N/dc2/scratch/jlorince/scrobbles_processed_2_10/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --blockdists --resultdir /N/dc2/scratch/jlorince/blockdists_random/
 
-python ${rootdir}patchAnalyses.py -f $1 --suppdir /home/jlorince/support/ --pickledir /home/jlorince/scrobbles_processed_2_5/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/gapdists/ --blockgaps
+python ${rootdir}patchAnalyses.py -f $1 --suppdir /home/jlorince/support/ --pickledir /home/jlorince/scrobbles_processed_2_5/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/scrobble_td/ --scrobblegaps
