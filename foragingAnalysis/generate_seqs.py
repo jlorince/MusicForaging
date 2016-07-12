@@ -3,12 +3,22 @@ Script to generate random listening sequences with jump distances following know
 """
 import numpy as np
 from scipy.spatial.distance import pdist,squareform
+import pandas as pd
+from datetime import datetime,timedelta
+from pathos.multiprocessing import ProcessingPool as Pool
+from pathos.multiprocessing import cpu_count
 
 # number of artists
 n_artists = 10000
+# sequence length
+seq_length = 20000
+# number of artifical sequences
+n = 10000
+
 jumpdist_path = '../testData/jumpdists_all'
 feature_path = '../GenreModeling/data/features/lda_artists/features_190.npy' # 'lda_tests_artists/features_190.npy'
 artist_pop_path = '../GenreModeling/data/artist_pop'
+td_dist_path = '../testData/scrobble_td.npy'
 
 # load feature data and generate distance matrix
 features = np.load(feature_path)[:n_artists]
@@ -16,8 +26,11 @@ pw = squareform(pdist(features,metric='cosine'))
 pw = np.round(pw,2)
 
 # load overall artist popularity distribution
-pops = np.array([int(line.strip().split(',')[1]) for line in open(artist_pop_path)])
+pops = np.array([int(line.strip().split(',')[1]) for line in open(artist_pop_path)])[:n_artists]
 pops = pops / float(pops.sum())
+
+# load time gap distribution
+td =np.load(td_dist_path)
 
 
 jump_dist_arr = np.loadtxt(jumpdist_path,delimiter=',',dtype=int)
@@ -35,7 +48,30 @@ def draw(last):
     return next_idx
 
 
+def genseq(idx):
 
-first = np.where(np.random.multinomial(1,pvals=pops)==1)[0][0]
+    first = np.where(np.random.multinomial(1,pvals=pops)==1)[0][0]
+    last = first
+    last_ts = datetime.now()
+    result = {'artist_idx':[first],'ts':[last_ts]}
+    for i in xrange(seq_length-1):
+        next_listen = draw(last)
+        last = next_listen
+        gap_bin = 120*np.where(np.random.multinomial(1,pvals=td)==1)[0][0]
+        gap = np.random.randint(gap_bin,gap_bin+120)
+        result['artist_idx'].append(next_listen)
+        new_ts = last_ts+timedelta(0,gap)
+        result['ts'].append(new_ts)
+        last_ts = new_ts
+
+    df = pd.DataFrame(result)
+    df['block'] = ((df['artist_idx'].shift(1) != df['artist_idx']).astype(int).cumsum())-1
+    df.to_pickle(str(idx)+'.pkl')
+
+pool = Pool(cpu_count())
+indices = range(n)
+pool.map(genseq,indices)
+pool.close()
+
 
 
