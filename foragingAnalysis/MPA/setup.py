@@ -11,6 +11,7 @@ import datetime
 import logging
 import warnings
 from scipy import sparse
+import os
 
 
 
@@ -434,6 +435,7 @@ class setup(object):
 
     def mean_block_distances(self,fi,n=100,shuffle=False):
 
+
         def hash_handler(a,frst):
             if frst>a:
                 frst,a = a,frst
@@ -456,52 +458,61 @@ class setup(object):
 
         user = fi.split('/')[-1][:-4]
         df = pd.read_pickle(fi)
-        """
-        result = []
-        dhash = {}
-        if shuffle:
-            blocks = df.copy()
-            idx = np.array(blocks.index)
-            np.random.shuffle(idx)
-            blocks = blocks.reindex(idx)
-        blocks = df.copy()
-        for i in xrange(len(blocks)-n):
-            first = blocks['artist_idx'].iloc[i]
-            result.append(np.array(df['artist_idx'][i+1:i+n+1].apply(lambda val: hash_handler(val,first))))
-        result = np.nanmean(np.vstack(result),0)
-        with open(self.args.resultdir+user,'a') as fout:
-            fout.write('\t'.join([user,'scrobble',','.join(result.astype(str))])+'\n')
 
-        result = []
-        blocks = df[['artist_idx','block']].groupby('block').first()
-        if shuffle:
-            idx = np.array(blocks.index)
-            np.random.shuffle(idx)
-            blocks = blocks.reindex(idx)
-        for i in xrange(len(blocks)-n):
-            first = blocks['artist_idx'].iloc[i]
-            result.append(np.array(blocks['artist_idx'][i+1:i+101].apply(lambda val: hash_handler(val,first))))
-        result = np.nanmean(np.vstack(result),0)
-        with open(self.args.resultdir+user,'a') as fout:
-            fout.write('\t'.join([user,'block',','.join(result.astype(str))])+'\n')
-        """
 
-        df['features'] = df['artist_idx'].apply(lambda idx: self.get_features(idx))
-        df = df.set_index('ts')['features']
+        if os.path.exists(self.args.resultdir+user):
+            levels = {'scrobble':False,'block':False,'D':True,'W':False,'M':False}
+        else:
+            levels = {'scrobble':True,'block':True,'D':True,'W':True,'M':True}
 
-        for res,n in (('D',365),):#('W',52),('M',12)):
+        if levels['scrobble']:
             result = []
-            blocks = df.resample(res).aggregate(lambda ser: np.nanmean(np.vstack(ser.values),axis=0) if len(ser)>0 else np.repeat(np.nan,self.n_features))
+            dhash = {}
+            if shuffle:
+                blocks = df.copy()
+                idx = np.array(blocks.index)
+                np.random.shuffle(idx)
+                blocks = blocks.reindex(idx)
+            blocks = df.copy()
+            for i in xrange(len(blocks)-n):
+                first = blocks['artist_idx'].iloc[i]
+                result.append(np.array(df['artist_idx'][i+1:i+n+1].apply(lambda val: hash_handler(val,first))))
+            result = np.nanmean(np.vstack(result),0)
+            with open(self.args.resultdir+user,'a') as fout:
+                fout.write('\t'.join([user,'scrobble',','.join(result.astype(str))])+'\n')
+
+        if levels['block']:
+            result = []
+            blocks = df[['artist_idx','block']].groupby('block').first()
             if shuffle:
                 idx = np.array(blocks.index)
                 np.random.shuffle(idx)
                 blocks = blocks.reindex(idx)
             for i in xrange(len(blocks)-n):
-                first = blocks.iloc[i]
-                result.append(np.array(blocks[i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
+                first = blocks['artist_idx'].iloc[i]
+                result.append(np.array(blocks['artist_idx'][i+1:i+101].apply(lambda val: hash_handler(val,first))))
             result = np.nanmean(np.vstack(result),0)
             with open(self.args.resultdir+user,'a') as fout:
-                    fout.write('\t'.join([user,res,','.join(result.astype(str))])+'\n')
+                fout.write('\t'.join([user,'block',','.join(result.astype(str))])+'\n')
+
+
+        df['features'] = df['artist_idx'].apply(lambda idx: self.get_features(idx))
+        df = df.set_index('ts')['features']
+
+        for res,n in (('D',365),('W',52),('M',12)):
+            if levels[res]:
+                result = []
+                blocks = df.resample(res).aggregate(lambda ser: np.nanmean(np.vstack(ser.values),axis=0) if len(ser)>0 else np.repeat(np.nan,self.n_features))
+                if shuffle:
+                    idx = np.array(blocks.index)
+                    np.random.shuffle(idx)
+                    blocks = blocks.reindex(idx)
+                for i in xrange(len(blocks)-n):
+                    first = blocks.iloc[i]
+                    result.append(np.array(blocks[i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
+                result = np.nanmean(np.vstack(result),0)
+                with open(self.args.resultdir+user,'a') as fout:
+                        fout.write('\t'.join([user,res,','.join(result.astype(str))])+'\n')
 
         self.rootLogger.info('Block distances for user {} processed successfully ({})'.format(user,fi))
 

@@ -13,7 +13,7 @@ rootdir='/home/jlorince/MusicForaging/foragingAnalysis/MPA/'
 
 #### Generate patches, blocks, dists, etc., but ignore session thresholding
 
-python ${rootdir}setup.py -f $1 -p --suppdir /home/jlorince/support/ --pickledir /home/jlorince/scrobbles_processed_2_10/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --session_thresh 0 --dist_thresh 0.2 --min_patch_length 5
+#python ${rootdir}setup.py -f $1 -p -s --suppdir /home/jlorince/support/ --pickledir /home/jlorince/scrobbles_processed_random/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --session_thresh 0 --dist_thresh 0.2 --min_patch_length 5
 
 #### param sensitibity analyis
 
@@ -37,6 +37,9 @@ python ${rootdir}setup.py -f $1 -p --suppdir /home/jlorince/support/ --pickledir
 #python ${rootdir}setup.py -f $1 --suppdir /home/jlorince/support/ --pickledir /home/jlorince/scrobbles_processed_2_5/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --patch_basis patch_idx_shuffle --resultdir /home/jlorince/patches/
 
 #### BLOCK DISTS
-#python ${rootdir}setup.py -f $1 --suppdir /N/dc2/scratch/jlorince/support/ --pickledir /N/dc2/scratch/jlorince/scrobbles_processed_2_10/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --blockdists --resultdir /N/dc2/scratch/jlorince/blockdists_random/
+python ${rootdir}setup.py -f $1 --suppdir /homejlorince/support/ --pickledir /home/jlorince/random_seqs/ --feature_path home/jlorince/lda_tests_artists/features_190.npy --blockdists --resultdir /home/jlorince/blockdists_random/
 
 #python ${rootdir}setup.py -f $1 --suppdir /home/jlorince/support/ --pickledir /home/jlorince/scrobbles_processed_2_5/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/scrobble_td/ --scrobblegaps
+
+#python ${rootdir}patchAnalyses.py -f $1 -suppdir /homejlorince/support/ --pickledir /home/jlorince/random_seqs/ --feature_path home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/patch_blockdists_random/ --blockdists
+

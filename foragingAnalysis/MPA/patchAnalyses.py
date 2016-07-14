@@ -118,20 +118,20 @@ class analyze(setup.setup):
 
 
         # now shuffled
-        idx = np.array(blocks.index)
-        np.random.shuffle(idx)
-        blocks = blocks.reindex(idx)
+        # idx = np.array(blocks.index)
+        # np.random.shuffle(idx)
+        # blocks = blocks.reindex(idx)
 
-        result_random = []
-        for i in xrange(len(blocks)-n):
-            first = blocks['centroid'].iloc[i]
-            result_random.append(np.array(blocks['centroid'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
-        result_random = np.nanmean(np.vstack(result_random),0)
+        # result_random = []
+        # for i in xrange(len(blocks)-n):
+        #     first = blocks['centroid'].iloc[i]
+        #     result_random.append(np.array(blocks['centroid'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
+        # result_random = np.nanmean(np.vstack(result_random),0)
 
-        with open(self.args.resultdir+user,'w') as fout:
-            fout.write('\t'.join([user,'patch',','.join(result.astype(str))])+'\n')
-            fout.write('\t'.join([user,'patch_random',','.join(result_random.astype(str))])+'\n')
-        self.rootLogger.info('Block distances for user {} processed successfully ({})'.format(user,fi))
+        # with open(self.args.resultdir+user,'w') as fout:
+        #     fout.write('\t'.join([user,'patch',','.join(result.astype(str))])+'\n')
+        #     fout.write('\t'.join([user,'patch_random',','.join(result_random.astype(str))])+'\n')
+        # self.rootLogger.info('Block distances for user {} processed successfully ({})'.format(user,fi))
 
 
 
