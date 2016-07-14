@@ -456,7 +456,7 @@ class setup(object):
 
         user = fi.split('/')[-1][:-4]
         df = pd.read_pickle(fi)
-
+        """
         result = []
         dhash = {}
         if shuffle:
@@ -484,11 +484,12 @@ class setup(object):
         result = np.nanmean(np.vstack(result),0)
         with open(self.args.resultdir+user,'a') as fout:
             fout.write('\t'.join([user,'block',','.join(result.astype(str))])+'\n')
+        """
 
         df['features'] = df['artist_idx'].apply(lambda idx: self.get_features(idx))
         df = df.set_index('ts')['features']
 
-        for res,n in (('D',n),('W',52),('M',12)):
+        for res,n in (('D',365),):#('W',52),('M',12)):
             result = []
             blocks = df.resample(res).aggregate(lambda ser: np.nanmean(np.vstack(ser.values),axis=0) if len(ser)>0 else np.repeat(np.nan,self.n_features))
             if shuffle:
