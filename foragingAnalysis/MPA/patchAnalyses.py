@@ -120,6 +120,9 @@ class analyze(setup.setup):
             result.append(np.array(blocks['centroid'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
         result = np.nanmean(np.vstack(result),0)
 
+        with open(self.args.resultdir+user,'w') as fout:
+            fout.write('\t'.join([user,'patch',','.join(result.astype(str))])+'\n')
+
         self.rootLogger.info('Block distances for user {} processed successfully ({})'.format(user,fi))
 
 
