@@ -86,7 +86,7 @@ class analyze(setup.setup):
         if 'patches' not in fi:
             raise('WRONG DATATYPE')
         user = fi.split('/')[-1].split('_')[0]
-        df = pd.read_pickle(fi)
+        df = pd.read_pickle(fi).dropna(subset=['diversity'])
         zeros = np.histogram(df[df['n']>=5]['diversity'],bins=bins)[0]
         nozeros = np.histogram(df[(df['n']>=5)&(df['diversity']>0)]['diversity'],bins=bins)[0]
 
