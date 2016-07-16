@@ -149,7 +149,7 @@ class analyze(setup.setup):
         mask = (df['centroid'].apply(lambda arr: ~np.any(np.isnan(arr))).values)&(df['n']>=5)&(df['diversity']<=0.2)
         clust_data = df[mask].reset_index()
         arr =  np.vstack(clust_data['centroid'])
-        Z = linkage(a, 'complete')
+        Z = linkage(arr, 'complete')
         clusters = fcluster(Z,t=0.2,criterion='distance')
         assignments = np.repeat(np.nan,len(df))
         assignments[np.where(mask)] = clusters

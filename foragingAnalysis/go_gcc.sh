@@ -4,7 +4,7 @@ rootdir='/home/jlorince/MusicForaging/foragingAnalysis/MPA/'
 
 
 ####
-# parallel --jobs 32 -a joblist_patches.txt ./go_gcc.sh &> log
+# parallel --jobs 32 -a joblist_patches_random.txt ./go_gcc.sh &> log
 
 
 #### Just generate distances under a given feature space
@@ -34,12 +34,14 @@ rootdir='/home/jlorince/MusicForaging/foragingAnalysis/MPA/'
 #python ${rootdir}patchAnalyses.py -f $1 --pickledir /N/dc2/scratch/jlorince/scrobbles_processed/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --resultdir /N/dc2/scratch/jlorince/jumpdists/ --jumpdists
 
 #### PATCH STATS
-#python ${rootdir}setup.py -f $1 --suppdir /home/jlorince/support/ --pickledir /home/jlorince/scrobbles_processed_2_5/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --patch_basis patch_idx_shuffle --resultdir /home/jlorince/patches/
+#python ${rootdir}setup.py -f $1 --suppdir /home/jlorince/support/ --pickledir /home/jlorince/scrobbles_processed_random/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --patch_basis patch_idx_shuffle --resultdir /home/jlorince/patches_random/
 
 #### BLOCK DISTS
 #python ${rootdir}setup.py -f $1 --suppdir /homejlorince/support/ --pickledir /home/jlorince/random_seqs/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --blockdists --resultdir /home/jlorince/blockdists_random/
 
 #python ${rootdir}setup.py -f $1 --suppdir /home/jlorince/support/ --pickledir /home/jlorince/scrobbles_processed_2_5/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/scrobble_td/ --scrobblegaps
 
-python ${rootdir}patchAnalyses.py -f $1 --pickledir /home/jlorince/random_seqs/ --feature_path home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/patch_blockdists_random/ --blockdists
+#python ${rootdir}patchAnalyses.py -f $1 --pickledir /home/jlorince/random_seqs/ --feature_path home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/patch_blockdists_random/ --blockdists
+
+
 
