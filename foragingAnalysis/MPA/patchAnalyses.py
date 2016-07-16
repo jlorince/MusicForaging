@@ -12,6 +12,8 @@ import datetime
 import logging
 import warnings
 import setup
+from scipy.cluster.hierarchy import dendrogram, linkage, cophenet, fcluster
+
 
 class analyze(setup.setup):
 
@@ -118,6 +120,8 @@ class analyze(setup.setup):
             result.append(np.array(blocks['centroid'][i+1:i+n+1].apply(lambda val: cos_nan(val,first))))
         result = np.nanmean(np.vstack(result),0)
 
+        self.rootLogger.info('Block distances for user {} processed successfully ({})'.format(user,fi))
+
 
         # now shuffled
         # idx = np.array(blocks.index)
@@ -141,6 +145,16 @@ class analyze(setup.setup):
 
         mask = (df['centroid'].apply(lambda arr: ~np.any(np.isnan(arr))).values)&(df['n']>=5)&(df['diversity']<=0.2)
         clust_data = df[mask].reset_index()
+        arr =  np.vstack(clust_data['centroid'])
+        Z = linkage(a, 'complete')
+        clusters = fcluster(Z,t=0.2,criterion='distance')
+        assignments = np.repeat(np.nan,len(df))
+        assignments[np.where(mask)] = clusters
+        df['patch_clust'] = assignments
+        df[['start_ts','patch_clust']].to_pickle('{}{}.pkl'.format(self.config.resultdir,user))
+        self.rootLogger.info('Patch clusters for user {} processed successfully ({})'.format(user,fi))
+
+
 
 
 
