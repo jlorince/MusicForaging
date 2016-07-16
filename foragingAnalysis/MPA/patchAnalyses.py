@@ -154,7 +154,7 @@ class analyze(setup.setup):
         assignments = np.repeat(np.nan,len(df))
         assignments[np.where(mask)] = clusters
         df['patch_clust'] = assignments
-        df[['start_ts','patch_clust']].to_pickle('{}{}.pkl'.format(self.config.resultdir,user))
+        df[['start_ts','patch_clust']].to_pickle('{}{}.pkl'.format(self.args.resultdir,user))
         self.rootLogger.info('Patch clusters for user {} processed successfully ({})'.format(user,fi))
 
 
