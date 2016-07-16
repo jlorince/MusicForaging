@@ -55,10 +55,12 @@ class analyze(setup.setup):
             #self.rootLogger.info("Starting block distance analysis")
             self.mean_block_distances(self.args.file)
 
-
         if self.args.diversity_dists:
             bins = np.arange(0,1.01,.01)
             self.diversity_distributions(self.args.file,bins=bins)
+
+        if self.args.clustering:
+            self.clustering(self.args.file)
 
 
     # calculate distribution (using histogram with specified bins)
@@ -133,6 +135,13 @@ class analyze(setup.setup):
         #     fout.write('\t'.join([user,'patch_random',','.join(result_random.astype(str))])+'\n')
         # self.rootLogger.info('Block distances for user {} processed successfully ({})'.format(user,fi))
 
+    def clustering(self,fi):
+        df = pd.read_pickle(fi)
+        user = fi.split('/')[-1].split('_')[0]
+
+        mask = (df['centroid'].apply(lambda arr: ~np.any(np.isnan(arr))).values)&(df['n']>=5)&(df['diversity']<=0.2)
+        clust_data = df[mask].reset_index()
+
 
 
 
@@ -149,6 +158,8 @@ if __name__ == '__main__':
     parser.add_argument("--jumpdists", help="generate each user's distribution of artist-artist distances",action='store_true')
     parser.add_argument("--blockdists", help="",action='store_true')
     parser.add_argument("--diversity_dists", help="generate distribution of patch diversity for each user",action='store_true')
+    parser.add_argument("--clustering", help="apply patch clustering",action='store_true')
+
 
 
 

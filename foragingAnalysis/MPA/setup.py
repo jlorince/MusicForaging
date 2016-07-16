@@ -77,6 +77,7 @@ class setup(object):
 
 
 
+
     # Calls preprocessing code to load raw text files and convert to dataframes, adding features, disances, etc.
     def preprocess(self):
 
@@ -543,6 +544,8 @@ class setup(object):
         with open(self.args.resultdir+user,'w') as fout:
             fout.write('\t'.join([user,','.join(result.astype(str))])+'\n')
         self.rootLogger.info('Gap times for user {} processed successfully ({})'.format(user,fi))
+
+
 
 
 if __name__ == '__main__':
