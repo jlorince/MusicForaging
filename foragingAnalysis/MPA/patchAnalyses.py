@@ -107,8 +107,6 @@ class analyze(setup.setup):
             else:
                 return cosine(arr1,arr2)
 
-        if 'patches' not in fi:
-            raise('WRONG DATATYPE')
 
         user = fi.split('/')[-1].split('_')[0]
         df = pd.read_pickle(fi)
