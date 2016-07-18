@@ -58,7 +58,7 @@ def calc_values(fi):
 
     df_raw.to_pickle('/home/jlorince/values_artists/{}.pkl'.format(user))
 
-    logging.info("User {} processed")
+    logging.info("User {} processed".format(user))
 
 
 
