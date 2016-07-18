@@ -165,7 +165,7 @@ class analyze(setup.setup):
             return df
 
         df_raw = pd.read_pickle(fi)
-        user = fi.split('/')[-1].split('_')[0]
+        user = fi.split('/')[-1][:-4]
 
         listensPerPatch = df_raw.groupby('patch_clust')['n'].sum()
         overall_prop = listensPerPatch/float(df_raw['n'].sum())
