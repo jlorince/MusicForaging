@@ -158,7 +158,7 @@ class analyze(setup.setup):
         df.to_pickle('{}{}.pkl'.format(self.args.resultdir,user))
         self.rootLogger.info('Patch clusters for user {} processed successfully ({})'.format(user,fi))
 
-    def patch_values(self,fi)
+    def patch_values(self,fi):
 
         def calc_c_counts(df):
             df['index'] = df['n'].cumsum()
