@@ -162,7 +162,7 @@ class analyze(setup.setup):
 
         def calc_c_counts(df):
             df['index'] = df['n'].cumsum()
-            return df
+            return df[['index']]
 
         df_raw = pd.read_pickle(fi)
         user = fi.split('/')[-1][:-4]
@@ -174,8 +174,8 @@ class analyze(setup.setup):
         overall_prop_exploit.name = 'final_value_exploit'
         df = df_raw.join(overall_prop,on='patch_clust').join(overall_prop_exploit,on='patch_clust')
 
-        df = df.groupby('patch_clust').apply(calc_c_counts)
-        df['n'] = df_raw['n']
+        indices = df.groupby('patch_clust').apply(calc_c_counts)
+        df['index'] = indices
         df['overall_index'] = df['n'].cumsum()
         df['current_value'] = df['index'] / df['overall_index']
         df['overall_exploit_index'] = np.where(np.isnan(df['patch_clust']),0,df['n']).cumsum()
