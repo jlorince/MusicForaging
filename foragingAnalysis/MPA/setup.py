@@ -40,9 +40,10 @@ class setup(object):
 
         #self.rootLogger.info("Input arguments: "+str(args))
 
-        features = np.load(self.args.feature_path)
-        self.n_features = features.shape[1]
-        self.features = {i:features[i] for i in xrange(len(features))}
+        if self.args.feature_path:
+            features = np.load(self.args.feature_path)
+            self.n_features = features.shape[1]
+            self.features = {i:features[i] for i in xrange(len(features))}
 
     @staticmethod
     def userFromFile(fi):
