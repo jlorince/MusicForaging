@@ -2,12 +2,11 @@
 Script to generate random listening sequences with jump distances following known jump distance distribution
 """
 import numpy as np
-from scipy.spatial.distance import pdist,squareform
 import pandas as pd
-from datetime import datetime,timedelta
 from pathos.multiprocessing import ProcessingPool as Pool
 from pathos.multiprocessing import cpu_count
 import logging
+from glob import glob
 
 
 
@@ -58,6 +57,8 @@ def calc_values(fi):
     df_raw['current_value_tfidf'] = df_raw['current_value'] * df_raw['idf']
 
     df_raw.to_pickle('/home/jlorince/{}.pkl'.format(user))
+
+    logging.info("User {} processed")
 
 
 
