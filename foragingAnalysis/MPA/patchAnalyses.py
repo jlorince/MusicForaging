@@ -164,6 +164,13 @@ class analyze(setup.setup):
             df['index'] = df['n'].cumsum()
             return df[['index']]
 
+
+        def cos_nan(arr1,arr2):
+            if np.any(np.isnan(arr1)) or np.any(np.isnan(arr2)):
+                return np.nan
+            else:
+                return cosine(arr1,arr2)
+
         df_raw = pd.read_pickle(fi)
         user = fi.split('/')[-1][:-4]
 
@@ -181,7 +188,15 @@ class analyze(setup.setup):
         df['overall_exploit_index'] = np.where(np.isnan(df['patch_clust']),0,df['n']).cumsum()
         df['current_value_exploit'] = df['index'] / df['overall_exploit_index']
 
-        df.to_pickle('{}{}.pkl'.format(self.args.resultdir,user))
+        df['next'] = df['centroid'].shift(-1)
+        df['nextdist'] = df.apply(lambda row: cos_nan(row['centroid'],row['next']),axis=1)
+
+        df_exploit = df_patches.dropna()
+        df_exploit['next'] = df_exploit['centroid'].shift(-1)
+        df_exploit['nextdist'] = df_exploit.apply(lambda row: cos_nan(row['centroid'],row['next']),axis=1)
+
+        df.drop(['centroid','next'],axis=1).to_pickle('{}{}.pkl'.format(self.args.resultdir,user))
+        df_exploit.drop(['centroid','next'],axis=1).to_pickle('{}{}_exploit.pkl'.format(self.args.resultdir,user))
         self.rootLogger.info('Patch values for user {} processed successfully ({})'.format(user,fi))
 
 
