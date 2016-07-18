@@ -56,7 +56,7 @@ def calc_values(fi):
     # def 5: tf-idf variant of up-to-moment prop. listens
     df_raw['current_value_tfidf'] = df_raw['current_value'] * df_raw['idf']
 
-    df_raw.to_pickle('/home/jlorince/{}.pkl'.format(user))
+    df_raw.to_pickle('/home/jlorince/values_artists/{}.pkl'.format(user))
 
     logging.info("User {} processed")
 
