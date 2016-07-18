@@ -32,7 +32,7 @@ def calc_values(fi):
 
     # def 1: final prop. listens
     vc = df_raw['artist_idx'].value_counts()
-    overall_prop = vc/float(len(df))
+    overall_prop = vc/float(len(df_raw))
     overall_prop.name = 'final_value'
     df_raw = df_raw.join(overall_prop,on='artist_idx')
 
