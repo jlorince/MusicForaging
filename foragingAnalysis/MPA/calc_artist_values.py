@@ -64,7 +64,7 @@ def calc_values(fi):
 
 
 pool = Pool(cpu_count())
-files = glob('/home/jlorince/patches_clustered/*')
+files = glob('/home/jlorince/scrobbles_processed_2_5/*')
 pool.map(calc_values,files)
 pool.close()
 
