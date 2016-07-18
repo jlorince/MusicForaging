@@ -64,6 +64,9 @@ class analyze(setup.setup):
         if self.args.clustering:
             self.clustering(self.args.file)
 
+        if self.args.values:
+            self.patch_values(self.args.file)
+
 
     # calculate distribution (using histogram with specified bins)
     # of sequential artist-to-artist distances
@@ -155,6 +158,33 @@ class analyze(setup.setup):
         df.to_pickle('{}{}.pkl'.format(self.args.resultdir,user))
         self.rootLogger.info('Patch clusters for user {} processed successfully ({})'.format(user,fi))
 
+    def patch_values(self,fi)
+
+        def calc_c_counts(df):
+            df['index'] = df['n'].cumsum()
+            return df
+
+        df_raw = pd.read_pickle(fi)
+        user = fi.split('/')[-1].split('_')[0]
+
+        listensPerPatch = df_raw.groupby('patch_clust')['n'].sum()
+        overall_prop = listensPerPatch/float(df_raw['n'].sum())
+        overall_prop_exploit = listensPerPatch/float(df_raw.dropna()['n'].sum())
+        overall_prop.name = 'final_value'
+        overall_prop_exploit.name = 'final_value_exploit'
+        df = df_raw.join(overall_prop,on='patch_clust').join(overall_prop_exploit,on='patch_clust')
+
+        df = df.groupby('patch_clust').apply(calc_c_counts)
+        df['n'] = df_raw['n']
+        df['overall_index'] = df['n'].cumsum()
+        df['current_value'] = df['index'] / df['overall_index']
+        df['overall_exploit_index'] = np.where(np.isnan(df['patch_clust']),0,df['n']).cumsum()
+        df['current_value_exploit'] = df['index'] / df['overall_exploit_index']
+
+        df.to_pickle('{}{}.pkl'.format(self.args.resultdir,user))
+        self.rootLogger.info('Patch values for user {} processed successfully ({})'.format(user,fi))
+
+
 
 
 
@@ -174,6 +204,7 @@ if __name__ == '__main__':
     parser.add_argument("--blockdists", help="",action='store_true')
     parser.add_argument("--diversity_dists", help="generate distribution of patch diversity for each user",action='store_true')
     parser.add_argument("--clustering", help="apply patch clustering",action='store_true')
+    parser.add_argument("--values", help="apply patch clustering",action='store_true')
 
 
 

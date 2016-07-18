@@ -545,6 +545,9 @@ class setup(object):
             fout.write('\t'.join([user,','.join(result.astype(str))])+'\n')
         self.rootLogger.info('Gap times for user {} processed successfully ({})'.format(user,fi))
 
+    #def artist_values(self,fi):
+
+
 
 
 

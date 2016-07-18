@@ -41,6 +41,9 @@ rootdir='/N/u/jlorince/BigRed2/MusicForaging/foragingAnalysis/MPA/'
 #### PATCH DIVERSITY DISTS
 #python ${rootdir}patchAnalyses.py -f $1 --pickledir /N/dc2/scratch/jlorince/patches_shuffle_2_5/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --resultdir /N/dc2/scratch/jlorince/patch_diversity_dists/ --diversity_dists
 
-### PATH CLUSTERING
-python ${rootdir}patchAnalyses.py -f $1 --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --resultdir /N/dc2/scratch/jlorince/patches_clustered/ --clustering
+### PATCH CLUSTERING
+#python ${rootdir}patchAnalyses.py -f $1 --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --resultdir /N/dc2/scratch/jlorince/patches_clustered/ --clustering
+
+### PATCH VALUE COMPUTATIOSN
+python ${rootdir}patchAnalyses.py -f $1 --resultdir /N/dc2/scratch/jlorince/values_patches/ --values
 
