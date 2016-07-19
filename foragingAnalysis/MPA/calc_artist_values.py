@@ -222,11 +222,11 @@ if donefile:
     for line in open(donefile):
         if 'processed' in line:
             done.add(line.split()[-2])
-    print "{} of {} users already processed".format(len(done),len(files))
+    logger.info("{} of {} users already processed".format(len(done),len(files)))
 files = [f for f in files if f not in done]
-
-#pool.map(calc_values,files)
-#pool.close()
+logger.info("{} users to process".format(len(file))
+pool.map(calc_values,files)
+pool.close()
 
 
 
