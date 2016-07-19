@@ -8,6 +8,7 @@ from pathos.multiprocessing import cpu_count
 import logging
 from glob import glob
 from scipy.spatial.distance import cosine
+import sys
 
 
 
@@ -215,8 +216,17 @@ def calc_values(fi):
 
 pool = Pool(cpu_count())
 files = glob('/home/jlorince/scrobbles_processed_2_5/*')
-pool.map(calc_values,files)
-pool.close()
+donefile = sys.argv[1]
+if donefile
+    done = set()
+    for line in open(donefile):
+        if 'processed' in line:
+            done.add(line.split()[-2])
+    print "{} of {} users already processed".format(len(done),len(files))
+files = [f for f in files if f not in done]
+
+#pool.map(calc_values,files)
+#pool.close()
 
 
 
