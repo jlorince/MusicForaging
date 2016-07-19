@@ -223,7 +223,7 @@ if donefile:
         if 'processed' in line:
             done.add(line.split()[-2])
     logging.info("{} of {} users already processed".format(len(done),len(files)))
-files = [f for f in files if f not in done]
+files = [f for f in files if f.split('/')[-1][:-4] not in done]
 logging.info("{} users to process".format(len(files)))
 pool.map(calc_values,files)
 pool.close()
