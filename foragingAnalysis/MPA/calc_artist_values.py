@@ -151,7 +151,7 @@ def calc_values(fi):
     # SAVE DATA
     with open('/home/jlorince/ee_results/{}'.format(user),'w') as fout:
         def writer(data,basis):
-            fout.write(user+'\t'+basis+'\t'+','.join(data.dropna().astype(str)))
+            fout.write(user+'\t'+basis+'\t'+','.join(data.dropna().astype(str))+'\n')
         writer(df_raw.groupby(np.digitize(df_raw['final_value'],bins=bins))['nextdist'].mean(),'scrobbles_nextdist_final')
         writer(df_raw_rand.groupby(np.digitize(df_raw_rand['final_value'],bins=bins))['nextdist'].mean(),'scrobbles_nextdist_final_rand')
 
