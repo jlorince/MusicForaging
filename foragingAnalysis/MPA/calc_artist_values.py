@@ -41,9 +41,11 @@ def calc_dist(idx_1,idx_2):
 artist_pops = pd.Series([line.split(',')[1] for line in open('/home/jlorince/artist_pop')],dtype=float)
 artist_pops.name = 'global_value'
 
+"""
 total_users = 145148.
 idf = pd.Series(np.log(total_users / np.loadtxt('/home/jlorince/idf_data',dtype=float)))
 idf.name = 'idf'
+"""
 
 # by-artist cumulative artist count functions
 def calc_c_counts(df):
@@ -53,14 +55,9 @@ def calc_c_blockcounts(df):
     df['index'] = df['n'].cumsum()
     return df[['index']]
 
-def return_time_listens(df):
-    df['return_time'] = df['overall_index'].shift(-1)-df['overall_index']
-    return df[['return_time']]
-
 def return_time(df):
-    df['return_time'] = df['overall_index'].shift(-1) - (df['overall_index']+df['n']-1)
+    df['return_time'] = df['overall_index'].shift(-1) - df['overall_index'] - 1
     return df[['return_time']]
-
 
 
 def calc_values(fi):
@@ -73,6 +70,7 @@ def calc_values(fi):
     overall_prop.name = 'final_value'
     df_raw = df_raw.join(overall_prop,on='artist_idx')
 
+    """
     # def 3: global popularity
 
     artist_pops.name = 'global_value'
@@ -81,8 +79,9 @@ def calc_values(fi):
     ### ADD IDF DATA
     df_raw = df_raw.join(idf,on='artist_idx')
 
-    # def 4: tf-idf variant of final prop. listens
+    def 4: tf-idf variant of final prop. listens
     df_raw['final_value_tfidf'] = df_raw['final_value'] * df_raw['idf']
+    """
 
     # copy to generate random shuffle versions
     df_raw_rand = df_raw.copy()
@@ -107,8 +106,14 @@ def calc_values(fi):
     blocked_rand['next'] = blocked_rand['artist_idx'].shift(-1)
     blocked_rand['nextdist'] = blocked_rand.apply(lambda row: calc_dist(row['artist_idx'],row['next']),axis=1)
 
-    # def 2: up-to-moment prop. listens
+    # indices
+    df_raw['overall_index'] = df_raw.index + 1
+    df_raw_rand['overall_index'] = df_raw_rand.index + 1
+    blocked['overall_index'] = blocked['n'].cumsum()
+    blocked_rand['overall_index'] = blocked_rand['n'].cumsum()
 
+    # def 2: up-to-moment prop. listens
+    """
     indices = df_raw.groupby('artist_idx').apply(calc_c_counts)
     df_raw['index'] = indices
     df_raw['overall_index'] = df_raw.index + 1
@@ -128,19 +133,22 @@ def calc_values(fi):
     blocked_rand['index'] = indices
     blocked_rand['overall_index'] = blocked_rand['n'].cumsum()
     blocked_rand['current_value'] = blocked_rand['index'] / blocked_rand['overall_index']
+    """
 
     # def 5: tf-idf variant of up-to-moment prop. listens
+    """
     df_raw['current_value_tfidf'] = df_raw['current_value'] * df_raw['idf']
     df_raw_rand['current_value_tfidf'] = df_raw_rand['current_value'] * df_raw_rand['idf']
 
     blocked['current_value_tfidf'] = blocked['current_value'] * blocked['idf']
     blocked_rand['current_value_tfidf'] = blocked_rand['current_value'] * blocked_rand['idf']
+    """
 
     # add return time data
-    rt = df_raw.groupby('artist_idx').apply(return_time_listens)
+    rt = df_raw.groupby('artist_idx').apply(return_time)
     df_raw['return_time'] = rt
 
-    rt = df_raw_rand.groupby('artist_idx').apply(return_time_listens)
+    rt = df_raw_rand.groupby('artist_idx').apply(return_time)
     df_raw_rand['return_time'] = rt
 
     rt = blocked.groupby('artist_idx').apply(return_time)
@@ -152,59 +160,16 @@ def calc_values(fi):
     # SAVE DATA
     with open('/home/jlorince/ee_results/{}'.format(user),'w') as fout:
         def writer(data,basis):
-            fout.write(user+'\t'+basis+'\t'+','.join(data.dropna().astype(str))+'\n')
-        writer(df_raw.groupby(np.digitize(df_raw['final_value'],bins=bins))['nextdist'].mean(),'scrobbles_nextdist_final')
-        writer(df_raw_rand.groupby(np.digitize(df_raw_rand['final_value'],bins=bins))['nextdist'].mean(),'scrobbles_nextdist_final_rand')
+             fout.write(user+'\t'+basis+'\t'+','.join(data.dropna().astype(str))+'\n')
 
-        writer(df_raw.groupby(np.digitize(df_raw['final_value_tfidf'],bins=bins))['nextdist'].mean(),'scrobbles_nextdist_final_tfidf')
-        writer(df_raw_rand.groupby(np.digitize(df_raw_rand['final_value_tfidf'],bins=bins))['nextdist'].mean(),'scrobbles_nextdist_final_tfidf_rand')
+        writer(df_raw.groupby(np.digitize(df_raw['final_value'],bins=bins))['return_time'].mean(),'scrobbles_rt_value')
+        writer(df_raw_rand.groupby(np.digitize(df_raw_rand['final_value'],bins=bins))['return_time'].mean(),'scrobbles_rt_value_rand')
 
-        writer(df_raw.groupby(np.digitize(df_raw['current_value'],bins=bins))['nextdist'].mean(),'scrobbles_nextdist_current')
-        writer(df_raw_rand.groupby(np.digitize(df_raw_rand['current_value'],bins=bins))['nextdist'].mean(),'scrobbles_nextdist_current_rand')
+        writer(blocked.groupby(np.digitize(blocked['final_value'],bins=bins))['return_time'].mean(),'blocks_rt')
+        writer(blocked_rand.groupby(np.digitize(blocked_rand['final_value'],bins=bins))['return_time'].mean(),'blocks_rt_value_rand')
 
-        writer(df_raw.groupby(np.digitize(df_raw['current_value_tfidf'],bins=bins))['nextdist'].mean(),'scrobbles_nextdist_current_tfidf')
-        writer(df_raw_rand.groupby(np.digitize(df_raw_rand['current_value_tfidf'],bins=bins))['nextdist'].mean(),'scrobbles_nextdist_current_tfidf_rand')
-
-        writer(blocked.groupby(np.digitize(blocked['final_value'],bins=bins))['nextdist'].mean(),'blocks_nextdist_final')
-        writer(blocked_rand.groupby(np.digitize(blocked_rand['final_value'],bins=bins))['nextdist'].mean(),'blocks_nextdist_final_rand')
-
-        writer(blocked.groupby(np.digitize(blocked['final_value_tfidf'],bins=bins))['nextdist'].mean(),'blocks_nextdist_final_tfidf')
-        writer(blocked_rand.groupby(np.digitize(blocked_rand['final_value_tfidf'],bins=bins))['nextdist'].mean(),'blocks_nextdist_final_tfidf_rand')
-
-        writer(blocked.groupby(np.digitize(blocked['current_value'],bins=bins))['nextdist'].mean(),'blocks_nextdist_current')
-        writer(blocked_rand.groupby(np.digitize(blocked_rand['current_value'],bins=bins))['nextdist'].mean(),'blocks_nextdist_current_rand')
-
-        writer(blocked.groupby(np.digitize(blocked['current_value_tfidf'],bins=bins))['nextdist'].mean(),'blocks_nextdist_current_tfidf')
-        writer(blocked_rand.groupby(np.digitize(blocked_rand['current_value_tfidf'],bins=bins))['nextdist'].mean(),'blocks_nextdist_current_tfidf_rand')
-
-        writer(df_raw.groupby(np.digitize(df_raw['final_value'],bins=bins))['return_time'].mean(),'scrobbles_return_time_final')
-        writer(df_raw_rand.groupby(np.digitize(df_raw_rand['final_value'],bins=bins))['return_time'].mean(),'scrobbles_return_time_final_rand')
-
-        writer(df_raw.groupby(np.digitize(df_raw['final_value_tfidf'],bins=bins))['return_time'].mean(),'scrobbles_return_time_final_tfidf')
-        writer(df_raw_rand.groupby(np.digitize(df_raw_rand['final_value_tfidf'],bins=bins))['return_time'].mean(),'scrobbles_return_time_final_tfidf_rand')
-
-        writer(df_raw.groupby(np.digitize(df_raw['current_value'],bins=bins))['return_time'].mean(),'scrobbles_return_time_current')
-        writer(df_raw_rand.groupby(np.digitize(df_raw_rand['current_value'],bins=bins))['return_time'].mean(),'scrobbles_return_time_current_rand')
-
-        writer(df_raw.groupby(np.digitize(df_raw['current_value_tfidf'],bins=bins))['return_time'].mean(),'scrobbles_return_time_current_tfidf')
-        writer(df_raw_rand.groupby(np.digitize(df_raw_rand['current_value_tfidf'],bins=bins))['return_time'].mean(),'scrobbles_return_time_current_tfidf_rand')
-
-        writer(blocked.groupby(np.digitize(blocked['final_value'],bins=bins))['return_time'].mean(),'blocks_return_time_final')
-        writer(blocked_rand.groupby(np.digitize(blocked_rand['final_value'],bins=bins))['return_time'].mean(),'blocks_return_time_final_rand')
-
-        writer(blocked.groupby(np.digitize(blocked['final_value_tfidf'],bins=bins))['return_time'].mean(),'blocks_return_time_final_tfidf')
-        writer(blocked_rand.groupby(np.digitize(blocked_rand['final_value_tfidf'],bins=bins))['return_time'].mean(),'blocks_return_time_final_tfidf_rand')
-
-        writer(blocked.groupby(np.digitize(blocked['current_value'],bins=bins))['return_time'].mean(),'blocks_return_time_current')
-        writer(blocked_rand.groupby(np.digitize(blocked_rand['current_value'],bins=bins))['return_time'].mean(),'blocks_return_time_current_rand')
-
-        writer(blocked.groupby(np.digitize(blocked['current_value_tfidf'],bins=bins))['return_time'].mean(),'blocks_return_time_current_tfidf')
-        writer(blocked_rand.groupby(np.digitize(blocked_rand['current_value_tfidf'],bins=bins))['return_time'].mean(),'blocks_return_time_current_tfidf_rand')
-
-
-
-
-
+        writer(blocked.groupby('n').mean(),'blocks_rt_n')
+        writer(blocked_rand.groupby('n').mean(),'blocks_rt_n_rand')
 
     #cols = ['artist_idx','ts','final_value','final_value_tfidf','current_value','current_value_tfidf','global_value','return_time','nextdist']
     #df_raw[cols].to_pickle('/home/jlorince/values_artists/{}.pkl'.format(user))
