@@ -168,8 +168,8 @@ def calc_values(fi):
         writer(blocked.groupby(np.digitize(blocked['final_value'],bins=bins))['return_time'].mean(),'blocks_rt')
         writer(blocked_rand.groupby(np.digitize(blocked_rand['final_value'],bins=bins))['return_time'].mean(),'blocks_rt_value_rand')
 
-        writer(blocked.groupby('n').mean(),'blocks_rt_n')
-        writer(blocked_rand.groupby('n').mean(),'blocks_rt_n_rand')
+        writer(blocked.groupby('n')['return_time'].mean(),'blocks_rt_n')
+        writer(blocked_rand.groupby('n')['return_time'].mean(),'blocks_rt_n_rand')
 
     #cols = ['artist_idx','ts','final_value','final_value_tfidf','current_value','current_value_tfidf','global_value','return_time','nextdist']
     #df_raw[cols].to_pickle('/home/jlorince/values_artists/{}.pkl'.format(user))
