@@ -7,6 +7,7 @@ from pathos.multiprocessing import ProcessingPool as Pool
 from pathos.multiprocessing import cpu_count
 import logging
 from glob import glob
+from scipy.spatial.distance import cosine
 
 
 
