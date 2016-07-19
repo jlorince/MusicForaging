@@ -217,7 +217,7 @@ def calc_values(fi):
 pool = Pool(cpu_count())
 files = glob('/home/jlorince/scrobbles_processed_2_5/*')
 donefile = sys.argv[1]
-if donefile
+if donefile:
     done = set()
     for line in open(donefile):
         if 'processed' in line:
