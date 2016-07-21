@@ -212,6 +212,8 @@ class analyze(setup.setup):
             result = df_patches_raw[np.isnan(df_patches_raw['patch_clust'])].groupby('n')['final_value_next'].mean()
             fout.write(user+'\t'+'exploit-value-vs-explore'+'\t'+'.'.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
 
+        self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
+
 
 
 
