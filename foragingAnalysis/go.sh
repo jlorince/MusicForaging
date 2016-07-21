@@ -47,3 +47,6 @@ rootdir='/N/u/jlorince/BigRed2/MusicForaging/foragingAnalysis/MPA/'
 ### PATCH VALUE COMPUTATIOSN
 python ${rootdir}patchAnalyses.py -f $1 --resultdir /N/dc2/scratch/jlorince/values_patches/ --values
 
+### patch explore/exploit stuff
+python ${rootdir}patchAnalyses.py -f $1 --resultdir /N/dc2/scratch/jlorince/ee_results_new/ --exp
+
