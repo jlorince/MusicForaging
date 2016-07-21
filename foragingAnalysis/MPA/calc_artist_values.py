@@ -158,18 +158,19 @@ def calc_values(fi):
     blocked_rand['return_time'] = rt
 
     # SAVE DATA
-    with open('/home/jlorince/ee_results/{}'.format(user),'w') as fout:
+    #with open('/home/jlorince/ee_results/{}'.format(user),'w') as fout:
+    with open('/home/jlorince/ee_results_null/{}'.format(user),'w') as fout:
         def writer(data,basis):
              fout.write(user+'\t'+basis+'\t'+','.join(data.dropna().astype(str))+'\n')
 
         writer(df_raw.groupby(np.digitize(df_raw['final_value'],bins=bins))['return_time'].mean(),'scrobbles_rt_value')
-        writer(df_raw_rand.groupby(np.digitize(df_raw_rand['final_value'],bins=bins))['return_time'].mean(),'scrobbles_rt_value_rand')
+        #writer(df_raw_rand.groupby(np.digitize(df_raw_rand['final_value'],bins=bins))['return_time'].mean(),'scrobbles_rt_value_rand')
 
-        writer(blocked.groupby(np.digitize(blocked['final_value'],bins=bins))['return_time'].mean(),'blocks_rt')
-        writer(blocked_rand.groupby(np.digitize(blocked_rand['final_value'],bins=bins))['return_time'].mean(),'blocks_rt_value_rand')
+        writer(blocked.groupby(np.digitize(blocked['final_value'],bins=bins))['return_time'].mean(),'blocks_rt_value')
+        #writer(blocked_rand.groupby(np.digitize(blocked_rand['final_value'],bins=bins))['return_time'].mean(),'blocks_rt_value_rand')
 
         writer(blocked.groupby('n')['return_time'].mean(),'blocks_rt_n')
-        writer(blocked_rand.groupby('n')['return_time'].mean(),'blocks_rt_n_rand')
+        #writer(blocked_rand.groupby('n')['return_time'].mean(),'blocks_rt_n_rand')
 
     #cols = ['artist_idx','ts','final_value','final_value_tfidf','current_value','current_value_tfidf','global_value','return_time','nextdist']
     #df_raw[cols].to_pickle('/home/jlorince/values_artists/{}.pkl'.format(user))
@@ -180,7 +181,8 @@ def calc_values(fi):
 
 
 pool = Pool(cpu_count())
-files = glob('/home/jlorince/scrobbles_processed_2_5/*')
+#files = glob('/home/jlorince/scrobbles_processed_2_5/*')
+files = glob('/home/jlorince/scrobbles_processed_random/*')
 if len(sys.argv)>1:
     donefile = sys.argv[1]
 
