@@ -43,10 +43,6 @@ rootdir='/home/jlorince/MusicForaging/foragingAnalysis/MPA/'
 
 #python ${rootdir}patchAnalyses.py -f $1 --pickledir /home/jlorince/random_seqs/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/patch_blockdists_random/ --blockdists
 
-for filename in patches/*; do
-    echo $filename
-    python ${rootdir}patchAnalyses.py -f $filename --feature_path /home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/patch_diversity_dists/ --diversity_dists
-done
-
+python ${rootdir}patchAnalyses.py -f $1   --suppdir /homejlorince/support/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/ee_results_new/ --exp
 
 

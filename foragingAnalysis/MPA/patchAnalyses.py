@@ -67,6 +67,9 @@ class analyze(setup.setup):
         if self.args.values:
             self.patch_values(self.args.file)
 
+        if self.args.exp:
+            self.explore_exploit(self.args.file)
+
 
     # calculate distribution (using histogram with specified bins)
     # of sequential artist-to-artist distances
@@ -158,7 +161,7 @@ class analyze(setup.setup):
         df.to_pickle('{}{}.pkl'.format(self.args.resultdir,user))
         self.rootLogger.info('Patch clusters for user {} processed successfully ({})'.format(user,fi))
 
-    def explore_explit(self,fi):
+    def explore_exploit(self,fi):
 
         user = fi.split('/')[-1].split('_')[0]
 
@@ -236,6 +239,7 @@ if __name__ == '__main__':
     parser.add_argument("--diversity_dists", help="generate distribution of patch diversity for each user",action='store_true')
     parser.add_argument("--clustering", help="apply patch clustering",action='store_true')
     parser.add_argument("--values", help="apply patch clustering",action='store_true')
+    parser.add_argument("--exp", help="explore/exploit analyses",action='store_true')
 
 
 
