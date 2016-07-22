@@ -13,6 +13,7 @@ import logging
 import warnings
 import setup
 from scipy.cluster.hierarchy import dendrogram, linkage, cophenet, fcluster
+from scipy import sparse
 
 
 class analyze(setup.setup):
@@ -171,46 +172,63 @@ class analyze(setup.setup):
         df_patches_raw['next_n'] = df_patches_raw['n'].shift(-1)
 
         # add patch values
-        listensPerPatch = df_patches_raw.groupby('patch_clust')['n'].sum()
-        overall_prop = listensPerPatch/float(df_patches_raw['n'].sum())
-        overall_prop.name = 'final_value'
-        df_patches_raw = df_patches_raw.join(overall_prop,on='patch_clust')
+        # listensPerPatch = df_patches_raw.groupby('patch_clust')['n'].sum()
+        # overall_prop = listensPerPatch/float(df_patches_raw['n'].sum())
+        # overall_prop.name = 'final_value'
+        # df_patches_raw = df_patches_raw.join(overall_prop,on='patch_clust')
 
-        with open(self.args.resultdir+user,'w') as fout:
 
-            # time in next exploit patch as function of exploration time
-            result = df_patches_raw[np.isnan(df_patches_raw['patch_clust'])].groupby('n')['next_n'].mean()
+        """
+        # time in next exploit patch as function of exploration time
+        result = df_patches_raw[np.isnan(df_patches_raw['patch_clust'])].groupby('n')['next_n'].mean()
 
-            fout.write(user+'\t'+'next-exploit-vs-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+        fout.write(user+'\t'+'next-exploit-vs-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+        """
+        # total time exploiting as a function of time exploring
+        df_patches_raw['explore'] = np.isnan(df_patches_raw['patch_clust']).astype(int)
+        df_patches_raw['explore-idx'] = df_patches_raw['explore'].cumsum()
+        grp_explore = df_patches_raw.groupby('explore-idx').apply(lambda df: pd.DataFrame({'n':[df['n'].iloc[0]],'n-exploit':[df['n'][1:].sum()]}))
 
-            # total time exploiting as a function of time exploring
-            df_patches_raw['explore'] = np.isnan(df_patches_raw['patch_clust']).astype(int)
-            df_patches_raw['explore-idx'] = df_patches_raw['explore'].cumsum()
-            grp_explore = df_patches_raw.groupby('explore-idx').apply(lambda df: pd.DataFrame({'n':[df['n'].iloc[0]],'n-exploit':[df['n'][1:].sum()]}))
+        #result = grp_explore.groupby('n')['n-exploit'].mean()
+        #fout.write(user+'\t'+'total-exploit-vs-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+        """
+        # exploration time as a function of exploitation time
+        grp_exploit = grp_explore.copy()
+        grp_exploit['n-explore'] = grp_exploit['n'].shift(-1)
 
-            result = grp_explore.groupby('n')['n-exploit'].mean()
-            fout.write(user+'\t'+'total-exploit-vs-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+        result = grp_exploit.groupby('n-exploit')['n-explore'].mean()
+        fout.write(user+'\t'+'explore-vs-exploit'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+        """
+        # prob exploit given explore time
+        explore_only = df_patches_raw[np.isnan(df_patches_raw['patch_clust'])]
+        result = explore_only['n'][:-1].value_counts()
+        arr = result.reindex(xrange(1,max(result.index)+1),fill_value=0.).values
+        final_result = arr/(np.cumsum(arr[::-1])[::-1])
+        final_result = sparse.csr_matrix(final_result)
 
-            # exploration time as a function of exploitation time
-            grp_exploit = grp_explore.copy()
-            grp_exploit['n-explore'] = grp_exploit['n'].shift(-1)
+        with open(self.args.resultdir+user+'_exploit','w') as fout:
+            fout.write(user+'\t'+':'.join([','.join(a) for a in final_result.data,final_result.indices,final_result.indptr]))
 
-            result = grp_exploit.groupby('n-exploit')['n-explore'].mean()
-            fout.write(user+'\t'+'explore-vs-exploit'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+        #fout.write(user+'\t'+'prob-exploit-given-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
 
-            # prob exploit given explore time
-            explore_only = df_patches_raw[np.isnan(df_patches_raw['patch_clust'])]
-            result = explore_only['n'][:-1].value_counts().sort_index()
-            fout.write(user+'\t'+'prob-explore-given-exploit'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+        # prob explore given exploit time
+        result = grp_explore['n-exploit'][grp_explore['n-exploit']>0].value_counts()
+        arr = result.reindex(xrange(1,max(result.index)+1),fill_value=0.).values
+        final_result = arr/np.cumsum(arr[::-1])[::-1]
+        final_result = sparse.csr_matrix(final_result)
 
-            # prob expore given exploit time
-            result = grp_explore['n-exploit'][grp_explore['n-exploit']>0].value_counts()
-            fout.write(user+'\t'+'prob-exploit-given-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+        with open(self.args.resultdir+user+'_explore','w') as fout:
+            fout.write(user+'\t'+':'.join([','.join(a) for a in final_result.data,final_result.indices,final_result.indptr]))
 
-            # patch value as a function of exploration time
-            df_patches_raw['final_value_next'] = df_patches_raw['final_value'].shift(-1)
-            result = df_patches_raw[np.isnan(df_patches_raw['patch_clust'])].groupby('n')['final_value_next'].mean()
-            fout.write(user+'\t'+'exploit-value-vs-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+
+        #fout.write(user+'\t'+'prob-explore-given-exploit'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+
+        """
+        # patch value as a function of exploration time
+        df_patches_raw['final_value_next'] = df_patches_raw['final_value'].shift(-1)
+        result = df_patches_raw[np.isnan(df_patches_raw['patch_clust'])].groupby('n')['final_value_next'].mean()
+        fout.write(user+'\t'+'exploit-value-vs-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+        """
 
         self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
 
