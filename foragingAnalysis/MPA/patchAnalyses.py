@@ -207,7 +207,7 @@ class analyze(setup.setup):
         final_result = sparse.csr_matrix(final_result)
 
         with open(self.args.resultdir+user+'_exploit','w') as fout:
-            fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr]))
+            fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr])+'\n')
 
         #fout.write(user+'\t'+'prob-exploit-given-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
 
@@ -218,7 +218,7 @@ class analyze(setup.setup):
         final_result = sparse.csr_matrix(final_result)
 
         with open(self.args.resultdir+user+'_explore','w') as fout:
-            fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr]))
+            fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr])+'\n')
 
 
         #fout.write(user+'\t'+'prob-explore-given-exploit'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
