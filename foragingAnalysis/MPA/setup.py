@@ -78,6 +78,8 @@ class setup(object):
         if self.args.ee_artists:
             self.ee_artists(self.args.file)
 
+        if self.args.block_len_dists:
+            self.block_len_dists(self.args.file)
 
 
 
@@ -561,6 +563,17 @@ class setup(object):
             fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr])+'\n')
         self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
 
+    def block_len_dists(self,fi):
+        user = self.userFromFile(fi)
+        blocks = pd.read_pickle(fi)['block']
+        result = blocks.value_counts().value_counts()
+        arr = result.reindex(xrange(1,max(result.index)+1),fill_value=0.).values
+        final_result = sparse.csr_matrix(arr)
+        with open(self.args.resultdir+user,'w') as fout:
+            fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr])+'\n')
+        self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
+
+
 
 
 
@@ -594,6 +607,7 @@ if __name__ == '__main__':
     parser.add_argument("--blockgaps", help="",action='store_true')
     parser.add_argument("--scrobblegaps", help="",action='store_true')
     parser.add_argument("--ee_artists",help="",action='store_true')
+    parser.add_argument("--block_len_dists",help="",action='store_true')
 
 
 

@@ -71,6 +71,9 @@ class analyze(setup.setup):
         if self.args.exp:
             self.explore_exploit(self.args.file)
 
+        if self.args.patch_len_dists:
+            sellf.patch_len_dists(self.args.file)
+
 
     # calculate distribution (using histogram with specified bins)
     # of sequential artist-to-artist distances
@@ -161,6 +164,33 @@ class analyze(setup.setup):
         df['patch_clust'] = assignments
         df.to_pickle('{}{}.pkl'.format(self.args.resultdir,user))
         self.rootLogger.info('Patch clusters for user {} processed successfully ({})'.format(user,fi))
+
+    def patch_len_dists(self,fi):
+        df = pd.read_pickle(fi)
+        user = fi.split('/')[-1][:-4]
+
+        explore = df[np.isnan(df['patch_clust'])]
+        exploit = df[~np.isnan(df['patch_clust'])]
+
+        result_explore = explore['n'].value_counts()
+        result_exploit = exploit['n'].value_counts()
+
+        result_explore = result_explore.reindex(xrange(1,max(result_explore.index)+1),fill_value=0.).values
+        result_exploit = result_exploit.reindex(xrange(1,max(result_exploit.index)+1),fill_value=0.).values
+
+        result_explore = sparse.csr_matrix(result_explore)
+        result_exploit = sparse.csr_matrix(result_exploit)
+
+
+        with open(self.args.resultdir+user,'w') as fout:
+            fout.write(user+'\t'+'explore'+'\t'+':'.join([','.join(a.astype(str)) for a in result_explore.data,result_explore.indices,result_explore.indptr])+'\n')
+            fout.write(user+'\t'+'exploit'+'\t'+':'.join([','.join(a.astype(str)) for a in result_exploit.data,result_exploit.indices,result_exploit.indptr])+'\n')
+        self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
+
+
+
+
+
 
     def explore_exploit(self,fi):
 
@@ -260,6 +290,8 @@ if __name__ == '__main__':
     parser.add_argument("--clustering", help="apply patch clustering",action='store_true')
     parser.add_argument("--values", help="apply patch clustering",action='store_true')
     parser.add_argument("--exp", help="explore/exploit analyses",action='store_true')
+    parser.add_argument("--patch_len_dists", help="explore/exploit segment length dists",action='store_true')
+
 
 
 
