@@ -550,6 +550,7 @@ class setup(object):
         self.rootLogger.info('Gap times for user {} processed successfully ({})'.format(user,fi))
 
     def ee_artists(self,fi):
+        user = self.userFromFile(fi)
         blocks = pd.read_pickle(fi)['block']
         result = blocks.value_counts().value_counts()
         arr = result.reindex(xrange(1,max(result.index)+1),fill_value=0.).values
