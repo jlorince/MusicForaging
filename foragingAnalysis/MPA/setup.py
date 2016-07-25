@@ -1,17 +1,17 @@
 import pandas as pd
-from glob import glob
-import sys
+#from glob import glob
+#import sys
 import argparse
-from scipy.spatial.distance import cosine,euclidean,pdist
+#from scipy.spatial.distance import cosine,euclidean,pdist
 import numpy as np
-from itertools import chain,tee, izip, groupby
-from functools import partial
-import time
-import datetime
+#from itertools import chain,tee, izip, groupby
+#from functools import partial
+#import time
+#import datetime
 import logging
-import warnings
+#import warnings
 from scipy import sparse
-import os
+#import os
 
 
 
@@ -558,6 +558,7 @@ class setup(object):
 
         with open(self.args.resultdir+user,'w') as fout:
             fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr])+'\n')
+        self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
 
 
 
@@ -591,7 +592,7 @@ if __name__ == '__main__':
     parser.add_argument("--blockdists", help="",action='store_true')
     parser.add_argument("--blockgaps", help="",action='store_true')
     parser.add_argument("--scrobblegaps", help="",action='store_true')
-    parset.add_argument("--ee_artist",help="",action='store_true')
+    parser.add_argument("--ee_artist",help="",action='store_true')
 
 
 
