@@ -72,7 +72,7 @@ class analyze(setup.setup):
             self.explore_exploit(self.args.file)
 
         if self.args.patch_len_dists:
-            sellf.patch_len_dists(self.args.file)
+            self.patch_len_dists(self.args.file)
 
 
     # calculate distribution (using histogram with specified bins)
