@@ -75,7 +75,7 @@ class setup(object):
             #self.rootLogger.info("Starting block distance analysis")
             self.scrobble_gaps(self.args.file)
 
-        if self.args.ee_artist:
+        if self.args.ee_artists:
             self.ee_artists(self.arg.file)
 
 
@@ -592,7 +592,7 @@ if __name__ == '__main__':
     parser.add_argument("--blockdists", help="",action='store_true')
     parser.add_argument("--blockgaps", help="",action='store_true')
     parser.add_argument("--scrobblegaps", help="",action='store_true')
-    parser.add_argument("--ee_artist",help="",action='store_true')
+    parser.add_argument("--ee_artists",help="",action='store_true')
 
 
 
