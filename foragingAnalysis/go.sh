@@ -44,9 +44,14 @@ rootdir='/N/u/jlorince/BigRed2/MusicForaging/foragingAnalysis/MPA/'
 ### PATCH CLUSTERING
 #python ${rootdir}patchAnalyses.py -f $1 --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --resultdir /N/dc2/scratch/jlorince/patches_clustered/ --clustering
 
-### PATCH VALUE COMPUTATIOSN
-python ${rootdir}patchAnalyses.py -f $1 --resultdir /N/dc2/scratch/jlorince/values_patches/ --values
+### PATCH VALUE COMPUTATIONS
+#python ${rootdir}patchAnalyses.py -f $1 --resultdir /N/dc2/scratch/jlorince/values_patches/ --values
 
 ### patch explore/exploit stuff
-python ${rootdir}patchAnalyses.py -f $1 --resultdir /N/dc2/scratch/jlorince/ee_results_new/ --exp
+#python ${rootdir}patchAnalyses.py -f $1 --resultdir /N/dc2/scratch/jlorince/ee_results_new/ --exp
+
+### artist level explore/exploit
+python ${rootdir}setup.py -f $1 --suppdir /N/dc2/scratch/jlorince/support/ --pickledir /N/dc2/scratch/jlorince/scrobbles_processed_2_5/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --ee_artists --resultdir /N/dc2/scratch/jlorince/ee_artists/
+
+
 

@@ -75,6 +75,9 @@ class setup(object):
             #self.rootLogger.info("Starting block distance analysis")
             self.scrobble_gaps(self.args.file)
 
+        if self.args.ee_artist:
+            self.ee_artists(self.arg.file)
+
 
 
 
@@ -546,7 +549,15 @@ class setup(object):
             fout.write('\t'.join([user,','.join(result.astype(str))])+'\n')
         self.rootLogger.info('Gap times for user {} processed successfully ({})'.format(user,fi))
 
-    #def artist_values(self,fi):
+    def ee_artists(self,fi):
+        blocks = pd.read_pickle(fi)['block']
+        result = blocks.value_counts().value_counts()
+        arr = result.reindex(xrange(1,max(result.index)+1),fill_value=0.).values
+        final_result = arr/(np.cumsum(arr[::-1])[::-1])
+        final_result = sparse.csr_matrix(final_result)
+
+        with open(self.args.resultdir+user,'w') as fout:
+            fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr])+'\n')
 
 
 
@@ -580,6 +591,7 @@ if __name__ == '__main__':
     parser.add_argument("--blockdists", help="",action='store_true')
     parser.add_argument("--blockgaps", help="",action='store_true')
     parser.add_argument("--scrobblegaps", help="",action='store_true')
+    parset.add_argument("--ee_artist",help="",action='store_true')
 
 
 
