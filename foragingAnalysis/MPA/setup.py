@@ -76,7 +76,7 @@ class setup(object):
             self.scrobble_gaps(self.args.file)
 
         if self.args.ee_artists:
-            self.ee_artists(self.arg.file)
+            self.ee_artists(self.args.file)
 
 
 
