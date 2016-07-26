@@ -218,7 +218,7 @@ class analyze(setup.setup):
         df_patches_raw['explore-idx'] = df_patches_raw['explore'].cumsum()
 
         # combine all exploit listens
-        grp_explore = df_patches_raw.groupby('explore-idx').apply(lambda df: pd.DataFrame({'n':[df['n'].iloc[0]],'n-exploit':[df['n'][1:].sum()]}))
+        #grp_explore = df_patches_raw.groupby('explore-idx').apply(lambda df: pd.DataFrame({'n':[df['n'].iloc[0]],'n-exploit':[df['n'][1:].sum()]}))
 
         # only last exploit bout
         grp_explore = df_patches_raw.groupby('explore-idx').apply(lambda df: pd.DataFrame({'n':[df['n'].iloc[0]],'n-exploit':[df['n'].iloc[-1]]}))
