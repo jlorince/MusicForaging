@@ -568,7 +568,7 @@ class setup(object):
 
     def ee_artists_2(self,fi):
         user = self.userFromFile(fi)
-        blocks = pd.read_pickle('../testData/scrobbles_processed/5759068.pkl')['block']
+        blocks = pd.read_pickle(fi)['block']
         cnts = pd.DataFrame({'n':blocks.value_counts().sort_index()})
         cnts['last-n'] = cnts['n'].shift(1)
         cnts['switch'] = cnts.apply(lambda row: 1 if ((row['last-n']==1) and (row['n']>1)) or ((row['last-n']>1) and (row['n']==1)) else 0,axis=1)
