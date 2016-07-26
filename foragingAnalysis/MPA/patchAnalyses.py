@@ -170,10 +170,12 @@ class analyze(setup.setup):
         user = fi.split('/')[-1][:-4]
 
         explore = df[np.isnan(df['patch_clust'])]
-        exploit = df[~np.isnan(df['patch_clust'])]
-
         result_explore = explore['n'].value_counts()
-        result_exploit = exploit['n'].value_counts()
+
+        df['explore'] = np.isnan(df['patch_clust']).astype(int)
+        df['explore-idx'] = df['explore'].cumsum()
+
+        result_exploit =  df.groupby('explore-idx').apply(lambda df: df.dropna()['n'].sum()).value_counts()
 
         result_explore = result_explore.reindex(xrange(1,max(result_explore.index)+1),fill_value=0.).values
         result_exploit = result_exploit.reindex(xrange(1,max(result_exploit.index)+1),fill_value=0.).values
@@ -186,9 +188,6 @@ class analyze(setup.setup):
             fout.write(user+'\t'+'explore'+'\t'+':'.join([','.join(a.astype(str)) for a in result_explore.data,result_explore.indices,result_explore.indptr])+'\n')
             fout.write(user+'\t'+'exploit'+'\t'+':'.join([','.join(a.astype(str)) for a in result_exploit.data,result_exploit.indices,result_exploit.indptr])+'\n')
         self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
-
-
-
 
 
 
