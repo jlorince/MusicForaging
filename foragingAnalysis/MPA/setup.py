@@ -563,6 +563,30 @@ class setup(object):
             fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr])+'\n')
         self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
 
+    def ee_artists_2(self,fi):
+        user = self.userFromFile(fi)
+        blocks = pd.read_pickle('../testData/scrobbles_processed/5759068.pkl')['block']
+        cnts = pd.DataFrame({'n':blocks.value_counts().sort_index()})
+        cnts['last-n'] = cnts['n'].shift(1)
+        cnts['switch'] = cnts.apply(lambda row: 1 if ((row['last-n']==1) and (row['n']>1)) or ((row['last-n']>1) and (row['n']==1)) else 0,axis=1)
+        cnts['exp-idx'] = cnts['switch'].cumsum()
+        result = cnts.groupby('exp-idx').apply(lambda grp: pd.Series({'n':len(grp),'exploit':0}) if grp['n'].iloc[0]==1 else pd.Series({'n':grp['n'].sum(),'exploit':1}))[:-1]
+        #result = cnts.groupby('exp-idx').apply(lambda grp: pd.Series({'n':len(grp),'exploit':0}) if grp['n'].iloc[0]==1 else pd.Series({'n':grp['n']iloc[-1],'exploit':1}))[:-1]
+        arr_exploit = result[result['exploit']==1]['n'].value_counts().reindex(xrange(1,max(result.index)+1),fill_value=0.).values
+        arr_explore = result[result['exploit']==0]['n'].value_counts().reindex(xrange(1,max(result.index)+1),fill_value=0.).values
+
+        final_result_exploit = arr_exploit/(np.cumsum(arr_exploit[::-1])[::-1])
+        final_result_exploit = sparse.csr_matrix(final_result_exploit)
+
+        final_result_explore = arr_explore/(np.cumsum(arr_explore[::-1])[::-1])
+        final_result_explore = sparse.csr_matrix(final_result_explore)
+
+        with open(self.args.resultdir+user,'w') as fout:
+            fout.write(user+'\t'+'explore'+'\t'+':'.join([','.join(a.astype(str)) for a in final_result_explore.data,final_result_explore.indices,final_result_explore.indptr])+'\n')
+            fout.write(user+'\t'+'exploit'+'\t'+':'.join([','.join(a.astype(str)) for a in final_result_exploit.data,final_result_exploit.indices,final_result_exploit.indptr])+'\n')
+        self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
+
+
     def block_len_dists(self,fi):
         user = self.userFromFile(fi)
         blocks = pd.read_pickle(fi)['block']

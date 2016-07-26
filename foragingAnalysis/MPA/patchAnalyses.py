@@ -217,7 +217,12 @@ class analyze(setup.setup):
         # total time exploiting as a function of time exploring
         df_patches_raw['explore'] = np.isnan(df_patches_raw['patch_clust']).astype(int)
         df_patches_raw['explore-idx'] = df_patches_raw['explore'].cumsum()
+
+        # combine all exploit listens
         grp_explore = df_patches_raw.groupby('explore-idx').apply(lambda df: pd.DataFrame({'n':[df['n'].iloc[0]],'n-exploit':[df['n'][1:].sum()]}))
+
+        # only last exploit bout
+        grp_explore = df_patches_raw.groupby('explore-idx').apply(lambda df: pd.DataFrame({'n':[df['n'].iloc[0]],'n-exploit':[df['n'].iloc[-1]]}))
 
         #result = grp_explore.groupby('n')['n-exploit'].mean()
         #fout.write(user+'\t'+'total-exploit-vs-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
