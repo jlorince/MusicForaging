@@ -233,17 +233,18 @@ class analyze(setup.setup):
         result = grp_exploit.groupby('n-exploit')['n-explore'].mean()
         fout.write(user+'\t'+'explore-vs-exploit'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
         """
-        # prob exploit given explore time
-        explore_only = df_patches_raw[np.isnan(df_patches_raw['patch_clust'])]
-        result = explore_only['n'][:-1].value_counts()
-        arr = result.reindex(xrange(1,max(result.index)+1),fill_value=0.).values
-        final_result = arr/(np.cumsum(arr[::-1])[::-1])
-        final_result = sparse.csr_matrix(final_result)
 
-        with open(self.args.resultdir+user+'_exploit','w') as fout:
-            fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr])+'\n')
+        # prob exploit given explore time - already done
 
-        #fout.write(user+'\t'+'prob-exploit-given-explore'+'\t'+','.join(["{}:{}".format(a,b) for a,b in result.iteritems()])+'\n')
+        # explore_only = df_patches_raw[np.isnan(df_patches_raw['patch_clust'])]
+        # result = explore_only['n'][:-1].value_counts()
+        # arr = result.reindex(xrange(1,max(result.index)+1),fill_value=0.).values
+        # final_result = arr/(np.cumsum(arr[::-1])[::-1])
+        # final_result = sparse.csr_matrix(final_result)
+
+        # with open(self.args.resultdir+user+'_exploit','w') as fout:
+        #     fout.write(user+'\t'+':'.join([','.join(a.astype(str)) for a in final_result.data,final_result.indices,final_result.indptr])+'\n')
+
 
         # prob explore given exploit time
         result = grp_explore['n-exploit'][grp_explore['n-exploit']>0].value_counts()
