@@ -53,10 +53,13 @@ rootdir='/N/u/jlorince/BigRed2/MusicForaging/foragingAnalysis/MPA/'
 ### artist level explore/exploit
 #python ${rootdir}setup.py -f $1 --suppdir /N/dc2/scratch/jlorince/support/ --pickledir /N/dc2/scratch/jlorince/scrobbles_processed_2_5/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --ee_artists --resultdir /N/dc2/scratch/jlorince/ee_artists/
 
+### artist level explore/exploit 2
+python ${rootdir}setup.py -f $1 --suppdir /N/dc2/scratch/jlorince/support/ --pickledir /N/dc2/scratch/jlorince/scrobbles_processed_2_5/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --ee_artists_2 --resultdir /N/dc2/scratch/jlorince/ee_artists_2/
+
 #### block length distributions
-python ${rootdir}setup.py -f $1 --suppdir /N/dc2/scratch/jlorince/support/ --pickledir /N/dc2/scratch/jlorince/scrobbles_processed_2_5/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --block_len_dists --resultdir /N/dc2/scratch/jlorince/block_len_dists/
+#python ${rootdir}setup.py -f $1 --suppdir /N/dc2/scratch/jlorince/support/ --pickledir /N/dc2/scratch/jlorince/scrobbles_processed_2_5/ --feature_path /N/dc2/scratch/jlorince/support/features_190.npy --block_len_dists --resultdir /N/dc2/scratch/jlorince/block_len_dists/
 
 ### explore/exploit segment length distributions
-python ${rootdir}patchAnalyses.py -f $1 --resultdir /N/dc2/scratch/jlorince/ee_segment_dists/ --patch_len_dists
+#python ${rootdir}patchAnalyses.py -f $1 --resultdir /N/dc2/scratch/jlorince/ee_segment_dists/ --patch_len_dists
 
 

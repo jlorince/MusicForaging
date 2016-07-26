@@ -78,6 +78,9 @@ class setup(object):
         if self.args.ee_artists:
             self.ee_artists(self.args.file)
 
+        if self.args.ee_artists_2:
+            self.ee_artists_2(self.args.file)
+
         if self.args.block_len_dists:
             self.block_len_dists(self.args.file)
 
@@ -631,6 +634,7 @@ if __name__ == '__main__':
     parser.add_argument("--blockgaps", help="",action='store_true')
     parser.add_argument("--scrobblegaps", help="",action='store_true')
     parser.add_argument("--ee_artists",help="",action='store_true')
+    parser.add_argument("--ee_artists_2",help="",action='store_true')
     parser.add_argument("--block_len_dists",help="",action='store_true')
 
 
