@@ -46,6 +46,8 @@ rootdir='/home/jlorince/MusicForaging/foragingAnalysis/MPA/'
 #python ${rootdir}patchAnalyses.py -f $1 --feature_path /home/jlorince/lda_tests_artists/features_190.npy --resultdir /home/jlorince/ee_results_new/ --exp
 
 #block len distributions
-python ${rootdir}setup.py -f $1 --suppdir /home/jlorince/support/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --block_len_dists --resultdir /home/jlorince/block_len_dists/
+#python ${rootdir}setup.py -f $1 --suppdir /home/jlorince/support/ --feature_path /home/jlorince/lda_tests_artists/features_190.npy --block_len_dists --resultdir /home/jlorince/block_len_dists/
 
+# patch length distributions
+python ${rootdir}patchAnalyses.py -f $1 --resultdir /home/jlorince/ee_segment_dists/ --patch_len_dists
 
