@@ -604,9 +604,9 @@ class setup(object):
         result = cnts.groupby('exp-idx').apply(lambda grp: pd.Series({'n':len(grp),'exploit':0}) if grp['n'].iloc[0]==1 else pd.Series({'n':grp['n'].sum(),'exploit':1}))[:-1]
         #result = cnts.groupby('exp-idx').apply(lambda grp: pd.Series({'n':len(grp),'exploit':0}) if grp['n'].iloc[0]==1 else pd.Series({'n':grp['n']iloc[-1],'exploit':1}))[:-1]
         arr_exploit = result[result['exploit']==1]['n'].value_counts()
-        arr_exploit = arr_exploit.reindex(xrange(1,max(arr_exploit.index)+1),fill_value=0.).values
+        arr_exploit = sparse.csr_matrix(arr_exploit.reindex(xrange(1,max(arr_exploit.index)+1),fill_value=0.).values)
         arr_explore = result[result['exploit']==0]['n'].value_counts()
-        arr_explore = arr_explore.reindex(xrange(1,max(arr_explore.index)+1),fill_value=0.).values
+        arr_explore = sparse.csr_matrix(arr_explore.reindex(xrange(1,max(arr_explore.index)+1),fill_value=0.).values)
 
         with open(self.args.resultdir+user,'w') as fout:
             fout.write(user+'\t'+'explore'+'\t'+':'.join([','.join(a.astype(str)) for a in arr_explore.data,arr_explore.indices,arr_explore.indptr])+'\n')
