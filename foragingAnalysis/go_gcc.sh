@@ -4,7 +4,7 @@ rootdir='/home/jlorince/MusicForaging/foragingAnalysis/MPA/'
 
 
 ####
-# parallel --jobs 32 -a joblist_patches_random.txt ./go_gcc.sh &> log
+# parallel --jobs 32 -a joblist_patches_clustered.txt ./go_gcc.sh &> log
 
 
 #### Just generate distances under a given feature space

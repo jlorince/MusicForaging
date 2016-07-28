@@ -81,6 +81,9 @@ class setup(object):
         if self.args.ee_artists_2:
             self.ee_artists_2(self.args.file)
 
+        if self.args.ee_artists_dists:
+            self.ee_artists_dists(self.args.file)
+
         if self.args.block_len_dists:
             self.block_len_dists(self.args.file)
 
@@ -591,6 +594,25 @@ class setup(object):
             fout.write(user+'\t'+'exploit'+'\t'+':'.join([','.join(a.astype(str)) for a in final_result_exploit.data,final_result_exploit.indices,final_result_exploit.indptr])+'\n')
         self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
 
+    def ee_artists_dists(self,fi):
+        user = self.userFromFile(fi)
+        blocks = pd.read_pickle(fi)['block']
+        cnts = pd.DataFrame({'n':blocks.value_counts().sort_index()})
+        cnts['last-n'] = cnts['n'].shift(1)
+        cnts['switch'] = cnts.apply(lambda row: 1 if ((row['last-n']==1) and (row['n']>1)) or ((row['last-n']>1) and (row['n']==1)) else 0,axis=1)
+        cnts['exp-idx'] = cnts['switch'].cumsum()
+        result = cnts.groupby('exp-idx').apply(lambda grp: pd.Series({'n':len(grp),'exploit':0}) if grp['n'].iloc[0]==1 else pd.Series({'n':grp['n'].sum(),'exploit':1}))[:-1]
+        #result = cnts.groupby('exp-idx').apply(lambda grp: pd.Series({'n':len(grp),'exploit':0}) if grp['n'].iloc[0]==1 else pd.Series({'n':grp['n']iloc[-1],'exploit':1}))[:-1]
+        arr_exploit = result[result['exploit']==1]['n'].value_counts()
+        arr_exploit = arr_exploit.reindex(xrange(1,max(arr_exploit.index)+1),fill_value=0.).values
+        arr_explore = result[result['exploit']==0]['n'].value_counts()
+        arr_explore = arr_explore.reindex(xrange(1,max(arr_explore.index)+1),fill_value=0.).values
+
+        with open(self.args.resultdir+user,'w') as fout:
+            fout.write(user+'\t'+'explore'+'\t'+':'.join([','.join(a.astype(str)) for a in arr_explore.data,arr_explore.indices,arr_explore.indptr])+'\n')
+            fout.write(user+'\t'+'exploit'+'\t'+':'.join([','.join(a.astype(str)) for a in arr_exploit.data,arr_exploit.indices,arr_exploit.indptr])+'\n')
+        self.rootLogger.info('User {} processed successfully ({})'.format(user,fi))
+
 
     def block_len_dists(self,fi):
         user = self.userFromFile(fi)
@@ -637,6 +659,7 @@ if __name__ == '__main__':
     parser.add_argument("--scrobblegaps", help="",action='store_true')
     parser.add_argument("--ee_artists",help="",action='store_true')
     parser.add_argument("--ee_artists_2",help="",action='store_true')
+    parser.add_argument("--ee_artists_dists",help="",action='store_true')
     parser.add_argument("--block_len_dists",help="",action='store_true')
 
 
