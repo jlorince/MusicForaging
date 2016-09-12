@@ -18,7 +18,7 @@
 
 import MySQLdb
 import sys
-dones = set()
+done = set()
 if len(sys.argv)>1:
     logfiles = sys.argv[1:]
     for fi in logfiles:
