@@ -17,6 +17,15 @@
 # qsub -l nodes=1:ppn=1,vmem=16gb,walltime=24:00:00 -m e go.sh
 
 import MySQLdb
+import sys
+dones = set()
+if len(sys.argv)>1:
+    logfiles = sys.argv[1:]
+    for fi in logfiles:
+        with open(fi) as f:
+            for line in f:
+                done.add(int(line.strip().split()[0]))
+
 db=MySQLdb.connect(host='rdc04.uits.iu.edu',port=3094,user='root',passwd='jao78gh',db='analysis_lastfm')
 
 cursor=db.cursor()
@@ -28,6 +37,8 @@ n_users = cursor.execute("select user_id from lastfm_users where sample_playcoun
 users = [u[0] for u in cursor.fetchall()]
 
 for i,u in enumerate(users):
+    if u in done:
+        continue
     print "{} ({}/{})".format(u,i+1,n_users)
     with open("/N/dc2/scratch/jlorince/scrobbles-complete/{}.txt".format(u),'w') as fout:
         n_scrobbles = cursor.execute("select item_id,artist_id,scrobble_time from lastfm_scrobbles where user_id={} order by scrobble_time asc;".format(u))
