@@ -31,7 +31,7 @@ rootLogger.addHandler(fileHandler)
 consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(logFormatter)
 rootLogger.addHandler(consoleHandler)
-rootLogger.setLevel(logging_level)
+rootLogger.setLevel(logging.INFO)
 
 
 done = set()
