@@ -56,10 +56,10 @@ users = [u[0] for u in cursor.fetchall()]
 for i,u in enumerate(users):
     if u in done:
         continue
-    rootLogger.info("{} ({}/{})".format(u,i+1,n_users))
     with open("/N/dc2/scratch/jlorince/scrobbles-complete/{}.txt".format(u),'w') as fout:
         n_scrobbles = cursor.execute("select item_id,artist_id,scrobble_time from lastfm_scrobbles where user_id={} order by scrobble_time asc;".format(u))
         for scrobble in cursor:
             fout.write('\t'.join(map(str,scrobble))+'\n')
+    rootLogger.info("{} ({}/{})".format(u,i+1,n_users))
 
 
