@@ -50,7 +50,7 @@ cursor.execute("SET SQL_BIG_SELECTS=1;")
 cursor.execute("SET time_zone = '+00:00';")
 cursor.execute("set sql_select_limit=18446744073709551615;")
 
-n_users = cursor.execute("select user_id from lastfm_users where sample_playcount>=0;")
+n_users = cursor.execute("select user_id from lastfm_users where sample_playcount>0;")
 users = [u[0] for u in cursor.fetchall()]
 
 for i,u in enumerate(users):
