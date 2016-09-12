@@ -19,6 +19,7 @@
 import MySQLdb
 import sys
 import logging
+import datetime
 
 now = datetime.datetime.now()
 log_filename = now.strftime('splitter_%Y%m%d_%H%M%S.log')
