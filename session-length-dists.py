@@ -17,15 +17,20 @@ t=30*60
 
 def temporal_threshold(f):
     try:
-        ser = pd.read_table(f,header=None,usecols=[2],names=['ts'],parse_dates=['ts'])['ts'].diff().dropna().apply(lambda x: x.seconds)
-        session_lengths = ((ser>t).cumsum()+1).value_counts()
-        if 1 in session_lengths.index:
-            session_lengths[1] += 1
+        ser = pd.read_table(f,header=None,usecols=[2],names=['ts'],parse_dates=['ts'])['ts']
+        if len(ser<1000):
+            return 0
         else:
-            session_lengths[1] = 1
-        result = session_lengths.value_counts()
-        result.to_pickle(outdir+f[f.find('\\')+1:])
-        return result.index.max()
+
+            ser = ser.diff().dropna().apply(lambda x: x.seconds)
+            session_lengths = ((ser>t).cumsum()+1).value_counts()
+            if 1 in session_lengths.index:
+                session_lengths[1] += 1
+            else:
+                session_lengths[1] = 1
+            result = session_lengths.value_counts()
+            result.to_pickle(outdir+f[f.find('\\')+1:])
+            return result.index.max()
     except:
         print f
         raise('blah')
