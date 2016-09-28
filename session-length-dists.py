@@ -20,7 +20,7 @@ t=30*60
 def temporal_threshold(f):
     ser = pd.read_table(f,header=None,usecols=[2],names=['ts'],parse_dates=['ts'])['ts']
     if len(ser)<1000:
-        return 0
+        return None
     else:
         ser = ser.diff().dropna().apply(lambda x: x.seconds)
         session_lengths = ((ser>t).cumsum()+1).value_counts()
@@ -61,6 +61,9 @@ if __name__=='__main__':
     total_files = len(files)
     for i,result in enumerate(pool.imap_unordered(temporal_threshold,files)):
         print "{}/{}".format(i+1,total_files)
+        if result is None:
+            continue
+
         if len(final_result) >= len(result):
             final_result[:len(result)] += result
         else:
