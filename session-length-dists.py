@@ -32,22 +32,22 @@ def build_hist(f):
 
 
 
+if __name__=='__main__':
+    pool = mp.Pool(mp.cpu_count())
 
-pool = mp.Pool(mp.cpu_count())
+    result = pool.map(temporal_threshold,files)
+    max_length = max(result)
 
-result = pool.map(temporal_threshold,files)
-max_length = max(result)
+    temp_files = glob.glob(outdir+'*')
 
-temp_files = glob.glob(outdir+'*')
-
-final_result = np.zeros(max_length)
-for result in pool.imap_unoredered(build_hist,temp_files):
-    final_result += result
+    final_result = np.zeros(max_length)
+    for result in pool.imap_unoredered(build_hist,temp_files):
+        final_result += result
 
 
-with open(outdir+'30min_thresh','w') as fout:
-    for i in final_result:
-        fout.write(str(i)+'\n')
+    with open(outdir+'30min_thresh','w') as fout:
+        for i in final_result:
+            fout.write(str(i)+'\n')
 
 
 
