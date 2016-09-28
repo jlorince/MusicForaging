@@ -10,11 +10,7 @@ import datetime
 import os
 
 
-import glob
-import pandas as pd
-import numpy as np
-
-files = glob.glob('/N/dc2/scratch/jlorince/scrobbles-complete/*')
+files = glob.glob('P:/Projects/BigMusic/jared.iu/scrobbles-complete/*')
 
 result = np.zeros(86400)
 bins = np.arange(0,86401,1)
