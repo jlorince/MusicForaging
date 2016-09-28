@@ -8,7 +8,6 @@ import cPickle
 import logging
 import datetime as dt
 import multiprocessing as mp
-import datetime
 
 
 #files = glob.glob('P:/Projects/BigMusic/jared.iu/scrobbles-complete/*')
