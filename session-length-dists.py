@@ -16,15 +16,19 @@ outdir = 'P:/Projects/BigMusic/scratch/'
 t=30*60
 
 def temporal_threshold(f):
-    ser = pd.read_table(f,header=None,usecols=[2],names=['ts'],parse_dates=['ts'])['ts'].diff().dropna().apply(lambda x: x.seconds)
-    session_lengths = ((ser>t).cumsum()+1).value_counts()
-    if 1 in session_lengths.index:
-        session_lengths[1] += 1
-    else:
-        session_lengths[1] = 1
-    result = session_lengths.value_counts()
-    result.to_pickle(outdir+f[f.find('\\')+1:])
-    return session_lengths.index.max()
+    try:
+        ser = pd.read_table(f,header=None,usecols=[2],names=['ts'],parse_dates=['ts'])['ts'].diff().dropna().apply(lambda x: x.seconds)
+        session_lengths = ((ser>t).cumsum()+1).value_counts()
+        if 1 in session_lengths.index:
+            session_lengths[1] += 1
+        else:
+            session_lengths[1] = 1
+        result = session_lengths.value_counts()
+        result.to_pickle(outdir+f[f.find('\\')+1:])
+        return session_lengths.index.max()
+    except:
+        print f
+        sys.exit()
 
 def build_hist(f):
     ser = pd.read_pickle(f)
