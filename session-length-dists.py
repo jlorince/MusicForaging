@@ -10,8 +10,10 @@ import datetime as dt
 import multiprocessing as mp
 
 
-files = glob.glob('P:/Projects/BigMusic/jared.iu/scrobbles-complete/*')
-outdir = 'P:/Projects/BigMusic/scratch/'
+#files = glob.glob('P:/Projects/BigMusic/jared.iu/scrobbles-complete/*')
+files = glob.glob(os.path.expanduser('~')+'/scrobbles-complete/*')
+#outdir = 'P:/Projects/BigMusic/scratch/'
+outdir = os.path.expanduser('~')+'/scratch/'
 
 t=30*60
 
@@ -55,5 +57,5 @@ if __name__=='__main__':
         final_result += result
     print "Hists done in {}".format(str(datetime.timedelta(seconds=(time.time()-start))))
 
-    np.save('P:/Projects/BigMusic/session_length_dist_30min.npy',final_result)
+    np.save('session_length_dist_30min_1000listens.npy',final_result)
     
