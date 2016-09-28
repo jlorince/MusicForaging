@@ -41,28 +41,19 @@ def build_hist(f):
 
 
 if __name__=='__main__':
+    start = time.time()
     pool = mp.Pool(mp.cpu_count())
 
     result = pool.map(temporal_threshold,files)
     max_length = max(result)
+    print "Pickles done in {}".format(str(datetime.timedelta(seconds=(time.time()-start))))
 
+    start = time.time()
     temp_files = glob.glob(outdir+'*')
-
     final_result = np.zeros(max_length)
-    for result in pool.imap_unoredered(build_hist,temp_files):
+    for result in pool.imap_unordered(build_hist,temp_files):
         final_result += result
+    print "Hists done in {}".format(str(datetime.timedelta(seconds=(time.time()-start))))
 
-
-    with open(outdir+'30min_thresh','w') as fout:
-        for i in final_result:
-            fout.write(str(i)+'\n')
-
-
-
-
-
-
-
-
-
-
+    np.save('P:/Projects/BigMusic/session_length_dist_30min.npy',final_result)
+    
