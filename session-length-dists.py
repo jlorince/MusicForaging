@@ -15,7 +15,7 @@ files = glob.glob(os.path.expanduser('~')+'/scrobbles-complete/*')
 #outdir = 'P:/Projects/BigMusic/scratch/'
 #outdir = os.path.expanduser('~')+'/scratch/'
 
-t=30*60
+t=60*60
 
 def temporal_threshold(f):
     ser = pd.read_table(f,header=None,usecols=[2],names=['ts'],parse_dates=['ts'])['ts']
@@ -70,6 +70,7 @@ if __name__=='__main__':
             temp = result.copy()
             temp[:len(final_result)] += final_result
             final_result = temp
+    print "Complete in {} ".format(str(datetime.timedelta(seconds=(time.time()-start))))
 
-    np.save('session_length_dist_30min_1000listens.npy',final_result)
+    np.save('session_length_dist_60min_1000listens.npy',final_result)
     
