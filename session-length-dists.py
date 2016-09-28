@@ -30,7 +30,8 @@ def temporal_threshold(f):
             else:
                 session_lengths[1] = 1
             result = session_lengths.value_counts()
-            result.to_pickle(outdir+f[f.find('\\')+1:])
+            #result.to_pickle(outdir+f[f.find('\\')+1:])
+            result.to_pickle(outdir+f[f.rfind('/')+1:])
             return result.index.max()
     except:
         print f
