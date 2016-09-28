@@ -32,7 +32,7 @@ def temporal_threshold(f):
         #result.to_pickle(outdir+f[f.find('\\')+1:])
         #result.to_pickle(outdir+f[f.rfind('/')+1:])
         #return result.index.max()
-        return result.reindex(1,result.index.max()+1,fill_value=0).values
+        return result.reindex(xrange(1,result.index.max()+1),fill_value=0).values
 
 
 def build_hist(f):
