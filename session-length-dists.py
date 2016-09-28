@@ -25,10 +25,10 @@ def temporal_threshold(f):
             session_lengths[1] = 1
         result = session_lengths.value_counts()
         result.to_pickle(outdir+f[f.find('\\')+1:])
-        return session_lengths.index.max()
+        return result.index.max()
     except:
         print f
-        sys.exit()
+        raise('blah')
 
 def build_hist(f):
     ser = pd.read_pickle(f)
