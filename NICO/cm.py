@@ -1,5 +1,7 @@
 import pandas as pd
 import multiprocessing as mp
+import numpy as np
+from tqdm import tqdm as tq
 
 def parse_df(fi,include_time=False):
     if include_time:
