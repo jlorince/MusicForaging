@@ -1,5 +1,5 @@
 import pandas as pd
-import mulitprocesing as mp
+import multiprocessing as mp
 
 def parse_df(fi,include_time=False):
     if include_time:
