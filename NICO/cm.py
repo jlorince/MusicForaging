@@ -82,6 +82,6 @@ if __name__ == '__main__':
             final.append(result)
                 #result_string = ','.join(result.index.astype(str))+'\t'+','.join(result.values.astype(str))
                 #out.write("{}\t{}\t{}\n".format(uid,gender,result_string))
-    final = np.vstack([a[1] for a in final if arr is not None])
-    np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_{}-{}-{}'.format(max_idx,min_length,ignore_first))
+    final = np.vstack([a[1] for a in final if a is not None])
+    np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_{}-{}-{}.npy'.format(max_idx,min_length,ignore_first))
     
