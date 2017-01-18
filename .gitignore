@@ -6,3 +6,4 @@ GenreModeling/data/*
 *lastfm.apikey
 *.ipynb_checkpoints
 *.DS_Store
+*._*
