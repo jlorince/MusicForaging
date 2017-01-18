@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     ids_f = set(filtered[filtered['gender']=='f']['user_id'])
     ids_m = set(filtered[filtered['gender']=='m']['user_id'])
-    ids_n = set(filtered[~filtered['gender'].isin('m','f')]['user_id'])
+    ids_n = set(filtered[~filtered['gender'].isin(['m','f'])]['user_id'])
 
 
     all_files = glob('p:/Projects/BigMusic/jared.IU/scrobbles-complete/*')
