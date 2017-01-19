@@ -102,7 +102,7 @@ if __name__ == '__main__':
     #with open('S:/UsersData_NoExpiration/jjl2228/foraging/cm.txt','w') as out:
     for ids,gender in zip([ids_m,ids_f,ids_n],['m','f','n']):
         final = []
-        for result in tq(pool.imap(survival,ids,chunksize=200),total=len(ids)):
+        for result in tq(pool.imap(survival_switch,ids,chunksize=200),total=len(ids)):
             final.append(result)
                 #result_string = ','.join(result.index.astype(str))+'\t'+','.join(result.values.astype(str))
                 #out.write("{}\t{}\t{}\n".format(uid,gender,result_string))
