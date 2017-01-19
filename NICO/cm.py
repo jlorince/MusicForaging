@@ -76,12 +76,12 @@ if __name__ == '__main__':
     pool = mp.Pool(n_procs)
     
     #with open('S:/UsersData_NoExpiration/jjl2228/foraging/cm.txt','w') as out:
-    final = []
     for ids,gender in zip([ids_m,ids_f,ids_n],['m','f','n']):
-        for result in tq(pool.imap_unordered(survival,ids,chunksize=100),total=len(ids)):
+        final = []
+        for result in tq(pool.imap(survival,ids,chunksize=200),total=len(ids)):
             final.append(result)
                 #result_string = ','.join(result.index.astype(str))+'\t'+','.join(result.values.astype(str))
                 #out.write("{}\t{}\t{}\n".format(uid,gender,result_string))
-    final = np.vstack([a[1] for a in final if a is not None])
-    np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_{}-{}-{}.npy'.format(max_idx,min_length,ignore_first))
+        final = np.vstack([a[1] for a in final if a is not None])
+        np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_{}_{}-{}-{}.npy'.format(gender,max_idx,min_length,ignore_first),final)
     
