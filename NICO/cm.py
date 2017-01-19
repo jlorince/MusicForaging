@@ -5,8 +5,8 @@ from tqdm import tqdm as tq
 from scipy import sparse
 
 max_idx = 1000
-min_length = 20000
-ignore_first = 10000
+min_length = 0#20000
+ignore_first = 0#10000
 
 
 def parse_df(fi,include_time=False):
@@ -16,7 +16,7 @@ def parse_df(fi,include_time=False):
         return pd.read_table(fi,header=None,names=['song_id','artist_id','ts'],usecols=['song_id','artist_id'])
 
 
-def survival(uid):
+def survival_encounter(uid):
     df = parse_df('P:/Projects/BigMusic/jared.IU/scrobbles-complete/{}.txt'.format(uid))
     if (min_length is not None) and (len(df)<min_length):
         return None
@@ -33,6 +33,30 @@ def survival(uid):
     if ignore_first is not None:
         df = df[ignore_first:]
     exploit_streaks = df[df.new==0].groupby('new_block').song_id.count().value_counts().sort_index()
+    if len(exploit_streaks)==0:
+        return None
+    cumulative = exploit_streaks[::-1].cumsum()[::-1]
+    # NOTE THAT FILLING WITH ZEROS is only for sparse matrix
+    result = (cumulative.shift(-1)/cumulative.astype(float)).reindex(range(1,max_idx+1),fill_value=np.nan)
+    return uid,result.values
+
+def survival_switch(uid):
+    df = parse_df('P:/Projects/BigMusic/jared.IU/scrobbles-complete/{}.txt'.format(uid))
+    if (min_length is not None) and (len(df)<min_length):
+        return None
+    explore = []
+    last = None
+    for a in df.artist_id:
+        if a == last:
+            explore.append(0)
+        else:
+            explore.append(1)
+        last = a
+    df['explore'] = explore
+    df['explore_block'] = df['explore'].cumsum()
+    if ignore_first is not None:
+        df = df[ignore_first:]
+    exploit_streaks = df[df.explore==0].groupby('explore_block').song_id.count().value_counts().sort_index()
     if len(exploit_streaks)==0:
         return None
     cumulative = exploit_streaks[::-1].cumsum()[::-1]
@@ -83,5 +107,6 @@ if __name__ == '__main__':
                 #result_string = ','.join(result.index.astype(str))+'\t'+','.join(result.values.astype(str))
                 #out.write("{}\t{}\t{}\n".format(uid,gender,result_string))
         final = np.vstack([a[1] for a in final if a is not None])
-        np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_{}_{}-{}-{}.npy'.format(gender,max_idx,min_length,ignore_first),final)
+        #np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_{}_{}-{}-{}.npy'.format(gender,max_idx,min_length,ignore_first),final)
+        np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_switch_{}_{}-{}-{}.npy'.format(gender,max_idx,min_length,ignore_first),final)
     
