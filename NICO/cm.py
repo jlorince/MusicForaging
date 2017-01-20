@@ -103,7 +103,7 @@ if __name__ == '__main__':
     for ids,gender in zip([ids_m,ids_f,ids_n],['m','f','n']):
         final = []
         with open('S:/UsersData_NoExpiration/jjl2228/foraging/indices_{}'.format(gender),'w') as out:
-            for uid,result in tq(zip(ids,pool.map(survival_switch,ids,chunksize=200),total=len(ids))):
+            for uid,result in tq(zip(ids,pool.map(survival_switch,ids,chunksize=200)),total=len(ids)):
                 final.append(result)
                 out.write(str(uid)+'\n')
                 #result_string = ','.join(result.index.astype(str))+'\t'+','.join(result.values.astype(str))
