@@ -58,7 +58,7 @@ def survival_switch(uid):
         df = df[ignore_first:]
     exploit_streaks = df[df.explore==0].groupby('explore_block').song_id.count().value_counts().sort_index()
     if len(exploit_streaks)==0:
-        rreturn np.full(max_idx,np.nan)
+        return np.full(max_idx,np.nan)
     cumulative = exploit_streaks[::-1].cumsum()[::-1]
     # NOTE THAT FILLING WITH ZEROS is only for sparse matrix
     result = (cumulative.shift(-1)/cumulative.astype(float)).reindex(range(1,max_idx+1),fill_value=np.nan)
