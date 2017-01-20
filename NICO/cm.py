@@ -38,7 +38,7 @@ def survival_encounter(uid):
     cumulative = exploit_streaks[::-1].cumsum()[::-1]
     # NOTE THAT FILLING WITH ZEROS is only for sparse matrix
     result = (cumulative.shift(-1)/cumulative.astype(float)).reindex(range(1,max_idx+1),fill_value=np.nan)
-    return uid,result.values
+    return result.values
 
 def survival_switch(uid):
     df = parse_df('P:/Projects/BigMusic/jared.IU/scrobbles-complete/{}.txt'.format(uid))
@@ -85,9 +85,9 @@ if __name__ == '__main__':
     #filtered = user_data.loc[(user_data['gender'].isin(filter_gender)) & (user_data['sample_playcount']>0)][['user_id','gender','sample_playcount']]
     filtered = user_data.loc[user_data['sample_playcount']>0]
 
-    ids_f = set(filtered[filtered['gender']=='f']['user_id'])
-    ids_m = set(filtered[filtered['gender']=='m']['user_id'])
-    ids_n = set(filtered[~filtered['gender'].isin(['m','f'])]['user_id'])
+    ids_f = sorted(filtered[filtered['gender']=='f']['user_id'])
+    ids_m = sorted(filtered[filtered['gender']=='m']['user_id'])
+    ids_n = sorted(filtered[~filtered['gender'].isin(['m','f'])]['user_id'])
 
 
     all_files = glob('p:/Projects/BigMusic/jared.IU/scrobbles-complete/*')
@@ -102,8 +102,10 @@ if __name__ == '__main__':
     #with open('S:/UsersData_NoExpiration/jjl2228/foraging/cm.txt','w') as out:
     for ids,gender in zip([ids_m,ids_f,ids_n],['m','f','n']):
         final = []
-        for result in tq(pool.imap(survival_switch,ids,chunksize=200),total=len(ids)):
-            final.append(result)
+        with open('S:/UsersData_NoExpiration/jjl2228/foraging/indices_{}'.format(gender),'w') as out:
+            for uid,result in tq(zip(ids,pool.map(survival_switch,ids,chunksize=200),total=len(ids))):
+                final.append(result)
+                out.write(str(uid)+'\n')
                 #result_string = ','.join(result.index.astype(str))+'\t'+','.join(result.values.astype(str))
                 #out.write("{}\t{}\t{}\n".format(uid,gender,result_string))
         final = np.vstack([a[1] for a in final if a is not None])
