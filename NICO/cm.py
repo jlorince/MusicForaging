@@ -62,7 +62,10 @@ def gen_exploit_bouts(uid,mode):
 
 
 def survival_curve(uid,mode):
-    T,C = gen_exploit_bouts(uid,mode=mode)
+    result gen_exploit_bouts(uid,mode=mode)
+    if result==None or len(t)==0:
+        return np.full(max_idx,np.nan)
+    T,C = result
     kmf = KaplanMeierFitter()
     kmf.fit(T, event_observed=C)
     return kmf.survival_function_.reindex(range(1,max_idx+1)).values
