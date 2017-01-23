@@ -108,6 +108,10 @@ if __name__ == '__main__':
         ids_m = sorted(filtered[filtered['gender']=='m']['user_id'])
         ids_n = sorted(filtered[~filtered['gender'].isin(['m','f'])]['user_id'])
 
+    else:
+        id_dict = {}
+        for gender in ('m','f','n'):
+            id_dict[gender] = [line.strip() for line in open(id_paths[gender])]
 
     all_files = glob('p:/Projects/BigMusic/jared.IU/scrobbles-complete/*')
 
@@ -115,7 +119,7 @@ if __name__ == '__main__':
 
     pool = mp.Pool(n_procs)
     
-    for ids,gender in zip([ids_m,ids_f,ids_n],['m','f','n']):
+    for gender,ids in id_dict.iteritems():
         final = []
         if gen_ids:
             out = open(id_paths[gender],'w')
