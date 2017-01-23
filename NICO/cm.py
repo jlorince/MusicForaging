@@ -3,10 +3,15 @@ import multiprocessing as mp
 import numpy as np
 from tqdm import tqdm as tq
 from scipy import sparse
+from lifelines import NelsonAalenFitter,KaplanMeierFitter
+from functools import partial
 
 max_idx = 1000
-min_length = 0#20000
-ignore_first = 0#10000
+# min_length = 0#20000
+# ignore_first = 0#10000
+# mode='encounter'
+# bandwidth=1
+
 
 
 def parse_df(fi,include_time=False):
@@ -15,56 +20,73 @@ def parse_df(fi,include_time=False):
     else:
         return pd.read_table(fi,header=None,names=['song_id','artist_id','ts'],usecols=['song_id','artist_id'])
 
-
-def survival_encounter(uid):
+def gen_exploit_bouts(uid):
     df = parse_df('P:/Projects/BigMusic/jared.IU/scrobbles-complete/{}.txt'.format(uid))
     if (min_length is not None) and (len(df)<min_length):
-        return np.full(max_idx,np.nan)
-    encountered = set()
-    new = []
-    for a in df.artist_id:
-        if a not in encountered:
-            new.append(1)
-            encountered.add(a)
-        else:
-            new.append(0)
-    df['new'] = new
-    df['new_block'] = df['new'].cumsum()
-    if ignore_first is not None:
-        df = df[ignore_first:]
-    exploit_streaks = df[df.new==0].groupby('new_block').song_id.count().value_counts().sort_index()
-    if len(exploit_streaks)==0:
-        return np.full(max_idx,np.nan)
-    cumulative = exploit_streaks[::-1].cumsum()[::-1]
-    # NOTE THAT FILLING WITH ZEROS is only for sparse matrix
-    result = (cumulative.shift(-1)/cumulative.astype(float)).reindex(range(1,max_idx+1),fill_value=np.nan)
-    return result.values
+        return None
+    
+    if mode == 'encounter':
+        encountered = set()
+        new = []
+        for a in df.artist_id:
+            if a not in encountered:
+                new.append(1)
+                encountered.add(a)
+            else:
+                new.append(0)
+        df['explore'] = new
+    elif mode == 'switch':  
+        explore = []
+        last = None
+        for a in df.artist_id:
+            if a == last:
+                explore.append(0)
+            else:
+                explore.append(1)
+            last = a
+        df['explore'] = explore
 
-def survival_switch(uid):
-    df = parse_df('P:/Projects/BigMusic/jared.IU/scrobbles-complete/{}.txt'.format(uid))
-    if (min_length is not None) and (len(df)<min_length):
-        return np.full(max_idx,np.nan)
-    explore = []
-    last = None
-    for a in df.artist_id:
-        if a == last:
-            explore.append(0)
-        else:
-            explore.append(1)
-        last = a
-    df['explore'] = explore
     df['explore_block'] = df['explore'].cumsum()
     if ignore_first is not None:
         df = df[ignore_first:]
     exploit_streaks = df[df.explore==0].groupby('explore_block').song_id.count().value_counts().sort_index()
-    if len(exploit_streaks)==0:
+    
+    if df.explore.iloc[-1] == 1:
+        C = [1]*len(T)
+    else:
+        C = ([1]*(len(T)-1))+[0]
+    return exploit_streaks.values,C
+
+
+def survival_curve(uid,mode):
+    T,C = gen_exploit_bouts(uid,mode=mode)
+    kmf = KaplanMeierFitter()
+    kmf.fit(T, event_observed=C)
+    return kmf.survival_function_.reindex(range(1,max_idx+1)).values
+
+def hazard_curve(uid,mode,bandwidth=1):
+    T,last_obs = gen_exploit_bouts(uid,mode=mode)
+    naf = NelsonAalenFitter()
+    naf.fit(T, event_observed=C)
+    return naf.smoothed_hazard_(bandwidth=bandwidth).reindex(range(1,max_idx+1)).values
+
+def survival_naive(uid,mode):
+    exploit_streaks = gen_exploit_bouts(uid,mode=mode)
+    if (exploit_streaks is None) or (len(exploit_streaks)==0):
         return np.full(max_idx,np.nan)
     cumulative = exploit_streaks[::-1].cumsum()[::-1]
-    # NOTE THAT FILLING WITH ZEROS is only for sparse matrix
     result = (cumulative.shift(-1)/cumulative.astype(float)).reindex(range(1,max_idx+1),fill_value=np.nan)
     return result.values
 
 if __name__ == '__main__':
+
+    mode = sys.argv[2]
+    measure = sys.argv[1]
+    if measure == 'hazard'
+        func = partial(hazard_curve,mode=mode,bandwidth=sys.argv[3])
+    else:
+        func = partial(survival_curve,mode=mode)
+
 
     import sys
     from glob import glob
@@ -75,40 +97,47 @@ if __name__ == '__main__':
 
     n_procs = mp.cpu_count()
   
+    id_paths = {gender:'S:/UsersData_NoExpiration/jjl2228/foraging/indices_{}'.format(gender) for gender in ('m','f','n')}
+    gen_ids = False
+    for p in id_paths.values():
+        if not os.path.exists():
+            gen_ids = True
+            break
+    if gen_ids:
+        ### METADATA HANDLING
+        user_data = pd.read_table('P:/Projects/BigMusic/jared.rawdata/lastfm_users.txt',header=None,names=['user_name','user_id','country','age','gender','subscriber','playcount','playlists','bootstrap','registered','type','anno_count','scrobbles_private','scrobbles_recorded','sample_playcount','realname'],na_values=['\\N'],usecols=['user_id','gender','sample_playcount'])
 
-    ### METADATA HANDLING
-    user_data = pd.read_table('P:/Projects/BigMusic/jared.rawdata/lastfm_users.txt',header=None,names=['user_name','user_id','country','age','gender','subscriber','playcount','playlists','bootstrap','registered','type','anno_count','scrobbles_private','scrobbles_recorded','sample_playcount','realname'],na_values=['\\N'],usecols=['user_id','gender','sample_playcount'])
+        filtered = user_data.loc[user_data['sample_playcount']>0]
 
-    #user_data['sample_playcount'][user_data['sample_playcount']=='\\N'] = 0 
-    #user_data['sample_playcount'] = user_data['sample_playcount'].astype(int)
-
-    #filtered = user_data.loc[(user_data['gender'].isin(filter_gender)) & (user_data['sample_playcount']>0)][['user_id','gender','sample_playcount']]
-    filtered = user_data.loc[user_data['sample_playcount']>0]
-
-    ids_f = sorted(filtered[filtered['gender']=='f']['user_id'])
-    ids_m = sorted(filtered[filtered['gender']=='m']['user_id'])
-    ids_n = sorted(filtered[~filtered['gender'].isin(['m','f'])]['user_id'])
+        ids_f = sorted(filtered[filtered['gender']=='f']['user_id'])
+        ids_m = sorted(filtered[filtered['gender']=='m']['user_id'])
+        ids_n = sorted(filtered[~filtered['gender'].isin(['m','f'])]['user_id'])
 
 
     all_files = glob('p:/Projects/BigMusic/jared.IU/scrobbles-complete/*')
-
-    #files_m = sorted([f for f in all_files if int(f[f.rfind('\\')+1:f.rfind('.')]) in ids_m],key=os.path.getsize,reverse=True)
-    #files_f = sorted([f for f in all_files if int(f[f.rfind('\\')+1:f.rfind('.')]) in ids_f],key=os.path.getsize,reverse=True)
 
     ### RUN MAIN PROCESSING
 
     pool = mp.Pool(n_procs)
     
-    #with open('S:/UsersData_NoExpiration/jjl2228/foraging/cm.txt','w') as out:
     for ids,gender in zip([ids_m,ids_f,ids_n],['m','f','n']):
         final = []
-        with open('S:/UsersData_NoExpiration/jjl2228/foraging/indices_{}'.format(gender),'w') as out:
-            for uid,result in tq(zip(ids,pool.map(survival_switch,ids,chunksize=200)),total=len(ids)):
-                final.append(result)
+        if gen_ids:
+            out = open(id_paths[gender],'w')
+        for uid,result in tq(zip(ids,pool.map(func,ids,chunksize=len(idx)/n_procs)),total=len(ids)):
+            final.append(result)
+            if gen_ids:
                 out.write(str(uid)+'\n')
-                #result_string = ','.join(result.index.astype(str))+'\t'+','.join(result.values.astype(str))
-                #out.write("{}\t{}\t{}\n".format(uid,gender,result_string))
+        if gen_ids:
+            out.close()
         final = np.vstack(final)
-        #np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_{}_{}-{}-{}.npy'.format(gender,max_idx,min_length,ignore_first),final)
-        np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_switch_{}_{}-{}-{}.npy'.format(gender,max_idx,min_length,ignore_first),final)
+        #np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_{}_{}_{}-{}-{}.npy'.format(mode,gender,max_idx,min_length,ignore_first),final)
+        if measure=='hazard':
+            np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_{}_{}_{}_{}.npy'.format(mode,measure,gender,bandwidth),final)
+        else:
+            np.save('S:/UsersData_NoExpiration/jjl2228/foraging/cm_{}_{}_{}.npy'.format(mode,measure,gender),final)
+    try:
+        pool.close()
+    except:
+        pass
     
