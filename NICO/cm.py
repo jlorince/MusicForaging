@@ -10,8 +10,8 @@ from glob import glob
 
 
 max_idx = 1000
-# min_length = 0#20000
-# ignore_first = 0#10000
+min_length = 0#20000
+ignore_first = 0#10000
 # mode='encounter'
 # bandwidth=1
 
