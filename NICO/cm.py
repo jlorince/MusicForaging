@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     mode = sys.argv[1]
     measure = sys.argv[2]
-    if measure == 'hazard'
+    if measure == 'hazard':
         func = partial(hazard_curve,mode=mode,bandwidth=sys.argv[3])
     else:
         func = partial(survival_curve,mode=mode)
