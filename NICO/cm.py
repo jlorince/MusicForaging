@@ -95,7 +95,7 @@ if __name__ == '__main__':
     id_paths = {gender:'S:/UsersData_NoExpiration/jjl2228/foraging/indices_{}'.format(gender) for gender in ('m','f','n')}
     gen_ids = False
     for p in id_paths.values():
-        if not os.path.exists():
+        if not os.path.exists(p):
             gen_ids = True
             break
     if gen_ids:
