@@ -55,9 +55,9 @@ def gen_exploit_bouts(uid,mode):
     exploit_streaks = df[df.explore==0].groupby('explore_block').song_id.count().value_counts().sort_index()
     
     if df.explore.iloc[-1] == 1:
-        C = [1]*len(T)
+        C = [1]*len(exploit_streaks)
     else:
-        C = ([1]*(len(T)-1))+[0]
+        C = ([1]*(len(exploit_streaks)-1))+[0]
     return exploit_streaks.values,C
 
 
