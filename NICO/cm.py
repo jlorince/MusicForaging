@@ -71,7 +71,9 @@ def survival_curve(uid,mode):
     return kmf.survival_function_.reindex(range(1,max_idx+1)).values
 
 def hazard_curve(uid,mode,bandwidth=1):
-    T,C = gen_exploit_bouts(uid,mode=mode)
+    result = gen_exploit_bouts(uid,mode=mode)
+    if result==None or len(t)==0:
+        return np.full(max_idx,np.nan)
     naf = NelsonAalenFitter()
     naf.fit(T, event_observed=C)
     return naf.smoothed_hazard_(bandwidth=bandwidth).reindex(range(1,max_idx+1)).values
