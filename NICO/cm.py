@@ -68,7 +68,7 @@ def survival_curve(uid,mode):
     T,C = result
     kmf = KaplanMeierFitter()
     kmf.fit(T, event_observed=C)
-    return kmf.survival_function_.reindex(range(1,max_idx+1)).values
+    return kmf.survival_function_.reindex(range(1,max_idx+1))['KM_estimate'].values
 
 def hazard_curve(uid,mode,bandwidth=1):
     result = gen_exploit_bouts(uid,mode=mode)
@@ -77,7 +77,7 @@ def hazard_curve(uid,mode,bandwidth=1):
     T,C = result
     naf = NelsonAalenFitter()
     naf.fit(T, event_observed=C)
-    return naf.smoothed_hazard_(bandwidth=bandwidth).reindex(range(1,max_idx+1)).values
+    return naf.smoothed_hazard_(bandwidth=bandwidth).reindex(range(1,max_idx+1))['differenced-NA_estimate'].values
 
 def survival_naive(uid,mode):
     exploit_streaks = gen_exploit_bouts(uid,mode=mode)
