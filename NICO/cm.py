@@ -5,6 +5,9 @@ from tqdm import tqdm as tq
 from scipy import sparse
 from lifelines import NelsonAalenFitter,KaplanMeierFitter
 from functools import partial
+import sys,math,time,datetime,itertools,os
+from glob import glob
+
 
 max_idx = 1000
 # min_length = 0#20000
@@ -88,12 +91,7 @@ if __name__ == '__main__':
         func = partial(survival_curve,mode=mode)
 
 
-    import sys
-    from glob import glob
-    import math
-    import time,datetime
-    import os
-    import itertools
+
 
     n_procs = mp.cpu_count()
   
