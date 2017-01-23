@@ -123,7 +123,7 @@ if __name__ == '__main__':
         final = []
         if gen_ids:
             out = open(id_paths[gender],'w')
-        for uid,result in tq(zip(ids,pool.map(func,ids,chunksize=len(idx)/n_procs)),total=len(ids)):
+        for uid,result in tq(zip(ids,pool.map(func,ids,chunksize=len(ids)/n_procs)),total=len(ids)):
             final.append(result)
             if gen_ids:
                 out.write(str(uid)+'\n')
