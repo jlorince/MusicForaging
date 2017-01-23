@@ -23,7 +23,7 @@ def parse_df(fi,include_time=False):
     else:
         return pd.read_table(fi,header=None,names=['song_id','artist_id','ts'],usecols=['song_id','artist_id'])
 
-def gen_exploit_bouts(uid):
+def gen_exploit_bouts(uid,mode):
     df = parse_df('P:/Projects/BigMusic/jared.IU/scrobbles-complete/{}.txt'.format(uid))
     if (min_length is not None) and (len(df)<min_length):
         return None
