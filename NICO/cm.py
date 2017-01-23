@@ -63,7 +63,7 @@ def gen_exploit_bouts(uid,mode):
 
 def survival_curve(uid,mode):
     result = gen_exploit_bouts(uid,mode=mode)
-    if result==None or len(t)==0:
+    if result==None or len(result[0])==0:
         return np.full(max_idx,np.nan)
     T,C = result
     kmf = KaplanMeierFitter()
@@ -72,7 +72,7 @@ def survival_curve(uid,mode):
 
 def hazard_curve(uid,mode,bandwidth=1):
     result = gen_exploit_bouts(uid,mode=mode)
-    if result==None or len(t)==0:
+    if result==None or len(result[0])==0:
         return np.full(max_idx,np.nan)
     naf = NelsonAalenFitter()
     naf.fit(T, event_observed=C)
